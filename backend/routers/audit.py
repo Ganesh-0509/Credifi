@@ -1,83 +1,71 @@
 from __future__ import annotations
-
 from typing import Any
-
-import pandas as pd
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+import numpy as np
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from core.data_audit import run_data_audit
-from core.feature_intelligence import detect_proxy_features
-from models.db import AuditRun, get_db
-from utils.data_io import upload_file_to_dataframe
+from core.audit_chain import verify_chain
+from models.db import get_db, AuditLog
+from .auth import require_role
 
-router = APIRouter(prefix="/audit", tags=["audit"])
+router = APIRouter()
 
-
-@router.post("/data")
-async def audit_data(
-    project_id: int = Form(...),
-    sensitive_cols: str = Form(...),
-    target_col: str = Form(...),
-    file: UploadFile = File(...),
-    db: Session = Depends(get_db),
-) -> dict[str, Any]:
-    df = await upload_file_to_dataframe(file)
-    sensitive_list = [item.strip() for item in sensitive_cols.split(",") if item.strip()]
-    result = run_data_audit(df, sensitive_list, target_col)
-    audit_run = AuditRun(project_id=project_id, fairness_score=0.0, risk_level=result["risk_level"], results_json=result)
-    db.add(audit_run)
-    db.commit()
-    db.refresh(audit_run)
-    return result
-
-
-@router.post("/proxy")
-async def audit_proxy(
-    sensitive_cols: str = Form(...),
-    file: UploadFile = File(...),
-) -> dict[str, Any]:
-    df = await upload_file_to_dataframe(file)
-    sensitive_list = [item.strip() for item in sensitive_cols.split(",") if item.strip()]
-    return detect_proxy_features(df, sensitive_list)
-
-def get_primary_bias_type(audit_result: dict, proxy_result: dict, bias_result: dict) -> dict[str, Any] | None:
-    issues = []
-    if proxy_result.get("proxy_features"):
-        top = proxy_result["proxy_features"][0]
-        issues.append({
-            "type": "Proxy Leakage",
-            "detail": f"{top['feature']} correlates with {top['correlated_with']} (score: {top['proxy_score']})",
-            "severity": top["proxy_score"]
-        })
-    if audit_result.get("under_represented_groups"):
-        issues.append({
-            "type": "Representation Bias",
-            "detail": f"Groups {audit_result['under_represented_groups']} are under-represented in training data",
-            "severity": 0.6
-        })
+@router.get("/decision/{application_id}", dependencies=[Depends(require_role(["compliance"]))])
+async def get_decision_detail(application_id: str, db: Session = Depends(get_db)):
+    entry = db.query(AuditLog).filter(AuditLog.application_id == application_id).first()
+    if not entry:
+        raise HTTPException(status_code=404, detail="Decision record not found")
     
-    metrics = bias_result.get("metrics", {})
-    dpd = metrics.get("demographic_parity_difference", 0)
-    if dpd > 0.2:
-        issues.append({
-            "type": "Outcome Disparity",
-            "detail": f"Approval rate gap of {round(dpd*100)}% between groups",
-            "severity": dpd
-        })
-    
-    issues.sort(key=lambda x: x["severity"], reverse=True)
-    return issues[0] if issues else None
-
-@router.post("/summary")
-async def audit_summary(
-    audit_result: str = Form(...),
-    proxy_result: str = Form(...),
-    bias_result: str = Form(...),
-) -> dict[str, Any] | None:
-    import json
-    return get_primary_bias_type(
-        json.loads(audit_result),
-        json.loads(proxy_result),
-        json.loads(bias_result)
+    # Identify top factors from SHAP values
+    sorted_factors = sorted(
+        entry.shap_values.items(), 
+        key=lambda x: abs(x[1]), 
+        reverse=True
     )
+    
+    return {
+        "application_id": entry.application_id,
+        "user_id": entry.user_id,
+        "decision": entry.decision,
+        "probability": entry.probability,
+        "input_data": entry.input_data,
+        "shap_values": entry.shap_values,
+        "top_factors": [f[0] for f in sorted_factors[:5]],
+        "timestamp": entry.timestamp,
+        "previous_hash": entry.previous_hash,
+        "current_hash": entry.current_hash
+    }
+
+@router.get("/chain/verify", dependencies=[Depends(require_role(["compliance"]))])
+async def verify_audit_chain(db: Session = Depends(get_db)):
+    return verify_chain(db)
+
+@router.get("/anomalies", dependencies=[Depends(require_role(["compliance"]))])
+async def detect_anomalies(db: Session = Depends(get_db)):
+    # Fetch last 100 decisions to establish a baseline
+    records = db.query(AuditLog).order_by(AuditLog.id.desc()).limit(100).all()
+    if not records:
+        return []
+    
+    probs = [r.probability for r in records]
+    mean = np.mean(probs)
+    std = np.std(probs)
+    
+    anomalies = []
+    for r in records:
+        if abs(r.probability - mean) > 2 * std:
+            anomalies.append({
+                "application_id": r.application_id,
+                "probability": round(r.probability, 4),
+                "flag": "statistical_outlier",
+                "deviation_score": round(abs(r.probability - mean) / std, 2) if std > 0 else 0,
+                "timestamp": r.timestamp
+            })
+            
+    return anomalies
+
+@router.get("/recent", dependencies=[Depends(require_role(["compliance"]))])
+async def get_recent_decisions(db: Session = Depends(get_db)):
+    """Returns the last 20 audit entries for dashboard views."""
+    records = db.query(AuditLog).order_by(AuditLog.id.desc()).limit(20).all()
+    return records

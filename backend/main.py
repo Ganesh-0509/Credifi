@@ -1,14 +1,11 @@
 from __future__ import annotations
-
 import os
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from models.db import Base, engine
+from routers import auth, decisions, audit, regulator
 
-from models.db import Base, Project, SessionLocal, engine
-from routers import audit, bias, fixes, monitoring, pipeline, sandbox, project
-
-app = FastAPI(title="Unbiased AI Decision Platform")
+app = FastAPI(title="Credifi AI Credit Platform")
 
 _CORS_ORIGINS = [
     "http://localhost:3000",
@@ -17,30 +14,26 @@ _CORS_ORIGINS = [
     "http://localhost:5175",
 ]
 
-# Set CORS_ALLOW_ALL=1 in the environment to open wildcard origins for local dev.
 _allow_all = os.getenv("CORS_ALLOW_ALL", "0") == "1"
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"] if _allow_all else _CORS_ORIGINS,
-    allow_credentials=not _allow_all,  # credentials + wildcard is illegal; disable when wildcard
+    allow_credentials=not _allow_all,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(project.router)
-app.include_router(audit.router)
-app.include_router(bias.router)
-app.include_router(fixes.router)
-app.include_router(sandbox.router)
-app.include_router(monitoring.router)
-app.include_router(pipeline.router)
+# Active Routers
+app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app.include_router(decisions.router, prefix="/decisions", tags=["Decisions"])
+app.include_router(audit.router, prefix="/audit", tags=["Compliance"])
+app.include_router(regulator.router, prefix="/regulator", tags=["Regulatory"])
 
 @app.on_event("startup")
-def startup_seed() -> None:
+def startup_db() -> None:
     Base.metadata.create_all(bind=engine)
-
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok"}
+    return {"status": "ok", "system": "Credifi AI"}

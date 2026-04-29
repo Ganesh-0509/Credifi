@@ -19,7 +19,7 @@ export default function ScrollExperience() {
         <fog attach="fog" args={['#0F1115', 5, 25]} />
         
         <Suspense fallback={null}>
-          <ScrollControls pages={5} damping={0.18} infinite={false}>
+          <ScrollControls pages={5.8} damping={0.18} infinite={false}>
             <ExperienceScene />
             
             <Scroll html style={{ width: '100%' }}>

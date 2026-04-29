@@ -1,6 +1,6 @@
-# ⚖️ BIAS-0: The Fairness Guardian for AI
+# ⚖️ Credifi: The Fairness Guardian for Financial AI
 
-![BIAS-0 Banner](assets/banner.png)
+![Credifi Banner](assets/banner.png)
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111+-009688?logo=fastapi&style=for-the-badge)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18.2+-61DAFB?logo=react&style=for-the-badge)](https://reactjs.org/)
@@ -8,13 +8,13 @@
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&style=for-the-badge)](https://www.python.org/)
 
 **Audit. Analyze. Mitigate. Monitor.**  
-BIAS-0 is a comprehensive, end-to-end fairness assurance platform designed to help data scientists and AI engineers detect, understand, and resolve bias in their datasets and machine learning models.
+Credifi is a comprehensive, end-to-end fairness assurance platform designed to help financial data scientists and AI engineers detect, understand, and resolve bias in their datasets and machine learning models.
 
 ---
 
 ## 🌟 Core Value Proposition
 
-In the era of AI-driven decision-making, fairness is not just an ethical requirement but a business necessity. **BIAS-0** provides the technical infrastructure to ensure your models are accountable, transparent, and equitable across all demographic groups.
+In the era of AI-driven decision-making, fairness is not just an ethical requirement but a business necessity. **Credifi** provides the technical infrastructure to ensure your models are accountable, transparent, and equitable across all demographic groups.
 
 - **Uncover Hidden Bias**: Detect proxy features that leak sensitive information.
 - **Explainable Decisions**: Understand *why* a model might be biased using SHAP-based explainability.
@@ -61,7 +61,7 @@ graph TD
 
 ## 📊 Standardized Fairness Metrics
 
-BIAS-0 uses a unified **Fairness Score (0-100)** to provide a clear risk assessment:
+Credifi uses a unified **Fairness Score (0-100)** to provide a clear risk assessment:
 
 - **100**: Perfectly Fair. No detectable bias across demographic groups.
 - **75+**: **Low Risk (Green)**. Minor disparities detected.
@@ -105,7 +105,7 @@ Don't have a dataset and still want to see what it can do? Use the **"Load Demo 
 ## 📁 Project Structure
 
 ```text
-unbiased-ai/
+credifi/
 ├── backend/                  # FastAPI & Fairness Engines
 │   ├── core/                 # Audit, Bias, and Sandbox logic
 │   ├── models/               # Database and Schemas

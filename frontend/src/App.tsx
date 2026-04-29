@@ -1,67 +1,62 @@
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import WorkflowShell from './components/WorkflowShell';
-import Step1Upload from './pages/workflow/Step1Upload';
-import Step2Config from './pages/workflow/Step2Config';
-import Step3DataAudit from './pages/workflow/Step3DataAudit';
-import Step4ModelBias from './pages/workflow/Step4ModelBias';
-import Step5Explanations from './pages/workflow/Step5Explanations';
-import Step6Counterfactual from './pages/workflow/Step6Counterfactual';
-import Step7StressTest from './pages/workflow/Step7StressTest';
-import Step8Sandbox from './pages/workflow/Step8Sandbox';
-
-import Dashboard from './pages/Dashboard';
-import HeroPage from './pages/HeroPage';
-import CreateProject from './pages/CreateProject';
-import PageTransition from './components/animations/PageTransition';
-import BackgroundGrid from './components/animations/BackgroundGrid';
-import { useAppContext } from './context/AppContext';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import React from 'react';
+
+// Layouts
+import { DashboardLayout } from './layouts/DashboardLayout';
+
+// Pages
+import HeroPage from './pages/Auth/Hero';
+import LoginPage from './pages/Auth/Login';
+import RegisterPage from './pages/Auth/Register';
+import ApplicantDashboard from './pages/Applicant/Dashboard';
+import ComplianceDashboard from './pages/Compliance/Dashboard';
+import RegulatorDashboard from './pages/Regulator/Dashboard';
+
+import { useAppContext } from './context/AppContext';
+
+function ProtectedRoute({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: string[] }) {
+  const { token, role } = useAppContext();
+  
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  if (allowedRoles && role && !allowedRoles.includes(role)) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return <>{children}</>;
+}
 
 export default function App() {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { projectId, projects } = useAppContext();
-  const [hasResumed, setHasResumed] = React.useState(false);
-
-  // Safe Auto-Resume Logic
-  React.useEffect(() => {
-    if (projectId && projects.length > 0 && !hasResumed) {
-      const p = projects.find(proj => String(proj.id) === String(projectId));
-      if (p && p.max_step > 1) {
-        if (location.pathname === '/' || location.pathname === '/workflow/step-1') {
-          const resumeStep = Math.min(p.max_step, 8);
-          navigate(`/workflow/step-${resumeStep}`);
-          setHasResumed(true);
-        }
-      }
-    }
-  }, [projectId, projects, hasResumed, location.pathname, navigate]);
 
   return (
-    <>
-      {location.pathname !== '/' && <BackgroundGrid />}
-      <Routes location={location} key={location.pathname === '/' ? 'root' : 'app'}>
-        <Route path="/" element={<PageTransition locationKey="hero"><HeroPage /></PageTransition>} />
-        
-        <Route path="/*" element={
-          <WorkflowShell>
-            <Routes location={location} key={location.pathname}>
-              <Route path="/dashboard" element={<PageTransition locationKey="dash"><Dashboard /></PageTransition>} />
-              
-              <Route path="/workflow/step-1" element={<PageTransition locationKey="s1"><Step1Upload /></PageTransition>} />
-              <Route path="/workflow/step-2" element={<PageTransition locationKey="s2"><Step2Config /></PageTransition>} />
-              <Route path="/workflow/step-3" element={<PageTransition locationKey="s3"><Step3DataAudit /></PageTransition>} />
-              <Route path="/workflow/step-4" element={<PageTransition locationKey="s4"><Step4ModelBias /></PageTransition>} />
-              <Route path="/workflow/step-5" element={<PageTransition locationKey="s5"><Step5Explanations /></PageTransition>} />
-              <Route path="/workflow/step-6" element={<PageTransition locationKey="s6"><Step6Counterfactual /></PageTransition>} />
-              <Route path="/workflow/step-7" element={<PageTransition locationKey="s7"><Step7StressTest /></PageTransition>} />
-              <Route path="/workflow/step-8" element={<PageTransition locationKey="s8"><Step8Sandbox /></PageTransition>} />
-              
-              <Route path="*" element={<Navigate to="/workflow/step-1" replace />} />
-            </Routes>
-          </WorkflowShell>
-        } />
-      </Routes>
-    </>
+    <Routes location={location} key={location.pathname}>
+      <Route path="/" element={<HeroPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      
+      {/* Dashboards */}
+      <Route path="/dashboard/applicant" element={
+        <ProtectedRoute allowedRoles={['applicant']}>
+          <DashboardLayout><ApplicantDashboard /></DashboardLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/dashboard/compliance" element={
+        <ProtectedRoute allowedRoles={['compliance']}>
+          <DashboardLayout><ComplianceDashboard /></DashboardLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/dashboard/regulator" element={
+        <ProtectedRoute allowedRoles={['regulator']}>
+          <DashboardLayout><RegulatorDashboard /></DashboardLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }

@@ -1,4 +1,4 @@
-# PROMPT.md — Unbiased AI Decision Platform
+# PROMPT.md — Credifi Decision Platform
 ## AI Agentic Development Prompt (for Cursor / VS Code Copilot / Windsurf / Aider)
 
 ---

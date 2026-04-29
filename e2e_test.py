@@ -5,7 +5,7 @@ import urllib.parse
 import json
 import os
 
-os.chdir("c:/Users/nanda/Desktop/solution_challenge/unbiased-ai/backend")
+os.chdir("d:/Credifi/backend")
 server = subprocess.Popen(["c:/Users/nanda/Desktop/solution_challenge/.venv/Scripts/python.exe", "-m", "uvicorn", "main:app"])
 time.sleep(3)
 
