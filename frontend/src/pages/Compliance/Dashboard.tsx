@@ -154,6 +154,23 @@ export default function ComplianceDashboard() {
     }
   };
 
+  const handleBatchRestore = async () => {
+    try {
+      const res = await fetch('/api/audit/batch/restore', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        alert(data.message);
+        setVerifyStatus(null);
+        fetchRecent();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const toggleSelection = (id: string) => {
     const newSelected = new Set(selectedIds);
     if (newSelected.has(id)) newSelected.delete(id);
@@ -245,6 +262,45 @@ export default function ComplianceDashboard() {
             </Button>
           </div>
         </header>
+
+        {/* Forensic Alert Bar (Notification Bar) */}
+        <AnimatePresence>
+          {verifyStatus && !verifyStatus.valid && (
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="bg-rose-500 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(244,63,94,0.3)]"
+            >
+              <div className="p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex items-center gap-6">
+                  <div className="p-3 bg-black rounded-2xl shadow-lg">
+                    <ShieldAlert size={24} className="text-rose-500 animate-pulse" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-black text-black uppercase tracking-tighter">Forensic Alert: {verifyStatus.compromised_records?.length || 1} Anomalies Detected</h4>
+                    <p className="text-[10px] font-black text-black/60 uppercase tracking-widest mt-1">Immutable Chain has been compromised. Automatic batch healing protocol available.</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <Button 
+                    variant="primary" 
+                    className="bg-black text-white hover:bg-white hover:text-black border-none"
+                    onClick={handleBatchRestore}
+                  >
+                    <RefreshCw size={18} className="mr-2" /> Batch Restore All
+                  </Button>
+                  <button 
+                    onClick={() => setVerifyStatus(null)}
+                    className="p-3 hover:bg-black/10 rounded-2xl text-black/40 hover:text-black transition-all"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Anomaly Rate KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -366,34 +422,35 @@ export default function ComplianceDashboard() {
 
         {/* Verification Banner */}
         <AnimatePresence>
-          {verifyStatus && (
+          {verifyStatus && !verifyStatus.valid && !showAnomalyModal && (
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, height: 0 }}
-              className={`p-6 rounded-3xl border-2 flex flex-col gap-4 ${verifyStatus.valid ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/5 border-rose-500/20 text-rose-400'}`}
+              className="p-6 rounded-3xl border-2 flex flex-col gap-4 bg-rose-500/5 border-rose-500/20 text-rose-400"
             >
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-6">
-                  <div className={`p-3 rounded-2xl ${verifyStatus.valid ? 'bg-emerald-500' : 'bg-rose-500'} text-black shadow-2xl shrink-0`}>
-                    {verifyStatus.valid ? <CheckCircle2 size={24} /> : <AlertTriangle size={24} />}
+                  <div className="p-3 rounded-2xl bg-rose-500 text-black shadow-2xl shrink-0">
+                    <AlertTriangle size={24} />
                   </div>
                   <div>
-                    <h4 className="font-black text-xl uppercase tracking-tighter">{verifyStatus.valid ? 'Chain Integrity Verified' : 'Ledger Anomaly Detected!'}</h4>
+                    <h4 className="font-black text-xl uppercase tracking-tighter">Ledger Anomaly Detected!</h4>
                     <div className="flex items-center gap-3 mt-1">
                       <p className="text-[10px] font-black uppercase tracking-widest opacity-60">
-                        {verifyStatus.valid 
-                          ? `Audit cycle complete: ${verifyStatus.record_count} records validated without discrepancy.` 
-                          : (verifyStatus.reason || verifyStatus.message)}
+                        {verifyStatus.compromised_records?.length || 1} records failed cryptographic verification.
                       </p>
-                      {!verifyStatus.valid && (
-                        <button 
-                          onClick={() => setShowAnomalyModal(true)}
-                          className="text-[8px] font-black uppercase tracking-widest bg-rose-500 text-black px-2 py-0.5 rounded-full hover:bg-white transition-colors"
-                        >
-                          Launch Forensic Inspector
-                        </button>
-                      )}
+                      <button 
+                        onClick={() => {
+                          const firstComp = verifyStatus.compromised_records?.[0] || verifyStatus;
+                          // If it's the old format or new format, handle it
+                          setSelectedApp(decisions.find(d => d.application_id === firstComp.application_id));
+                          setShowAnomalyModal(true);
+                        }}
+                        className="text-[8px] font-black uppercase tracking-widest bg-rose-500 text-black px-2 py-0.5 rounded-full hover:bg-white transition-colors"
+                      >
+                        Launch Forensic Inspector
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -402,43 +459,72 @@ export default function ComplianceDashboard() {
                 </button>
               </div>
 
-              {!verifyStatus.valid && verifyStatus.application_id && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-rose-500/10">
-                  <div className="space-y-2">
-                    <p className="text-[8px] font-black uppercase tracking-widest opacity-40">Compromised Node ID</p>
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white/5 rounded-lg">
-                        <Database size={14} className="text-rose-500" />
+              {(() => {
+                const comp = verifyStatus.compromised_records?.[0] || verifyStatus;
+                if (!comp.application_id) return null;
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-rose-500/10">
+                    <div className="space-y-2">
+                      <p className="text-[8px] font-black uppercase tracking-widest opacity-40">Compromised Node ID</p>
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-white/5 rounded-lg">
+                          <Database size={14} className="text-rose-500" />
+                        </div>
+                        <p className="text-xs font-black text-white tracking-tighter">{comp.application_id}</p>
                       </div>
-                      <p className="text-xs font-black text-white tracking-tighter">{verifyStatus.application_id}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-[8px] font-black uppercase tracking-widest opacity-40">Cryptographic Discrepancy</p>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2">
+                           <span className="text-[7px] font-black px-1.5 py-0.5 bg-white/5 rounded text-slate-500 tracking-widest">STORED</span>
+                           <p className="text-[9px] font-mono opacity-60 truncate">{comp.stored_hash?.slice(0, 32)}...</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                           <span className="text-[7px] font-black px-1.5 py-0.5 bg-rose-500/20 rounded text-rose-400 tracking-widest">ACTUAL</span>
+                           <p className="text-[9px] font-mono text-rose-400 truncate">{(comp.recomputed_hash || comp.expected_hash)?.slice(0, 32)}...</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-[8px] font-black uppercase tracking-widest opacity-40">Last Verified State</p>
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-white/5 rounded-lg">
+                          <History size={14} className="text-slate-500" />
+                        </div>
+                        <p className="text-xs font-black text-white tracking-tighter">
+                          {new Date(comp.timestamp).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-[8px] font-black uppercase tracking-widest opacity-40">Cryptographic Discrepancy</p>
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2">
-                         <span className="text-[7px] font-black px-1.5 py-0.5 bg-white/5 rounded text-slate-500 tracking-widest">STORED</span>
-                         <p className="text-[9px] font-mono opacity-60 truncate">{verifyStatus.stored_hash?.slice(0, 32)}...</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                         <span className="text-[7px] font-black px-1.5 py-0.5 bg-rose-500/20 rounded text-rose-400 tracking-widest">ACTUAL</span>
-                         <p className="text-[9px] font-mono text-rose-400 truncate">{(verifyStatus.recomputed_hash || verifyStatus.expected_hash)?.slice(0, 32)}...</p>
-                      </div>
-                    </div>
+                );
+              })()}
+            </motion.div>
+          )}
+          {verifyStatus && verifyStatus.valid && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, height: 0 }}
+              className="p-6 rounded-3xl border-2 flex flex-col gap-4 bg-emerald-500/5 border-emerald-500/20 text-emerald-400"
+            >
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-6">
+                  <div className="p-3 rounded-2xl bg-emerald-500 text-black shadow-2xl shrink-0">
+                    <CheckCircle2 size={24} />
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-[8px] font-black uppercase tracking-widest opacity-40">Last Verified State</p>
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white/5 rounded-lg">
-                        <History size={14} className="text-slate-500" />
-                      </div>
-                      <p className="text-xs font-black text-white tracking-tighter">
-                        {new Date(verifyStatus.timestamp).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
-                      </p>
-                    </div>
+                  <div>
+                    <h4 className="font-black text-xl uppercase tracking-tighter">Chain Integrity Verified</h4>
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mt-1">
+                      Audit cycle complete: {verifyStatus.record_count} records validated without discrepancy.
+                    </p>
                   </div>
                 </div>
-              )}
+                <button onClick={() => setVerifyStatus(null)} className="p-3 hover:bg-white/5 rounded-2xl text-white/40 hover:text-white transition-all shrink-0">
+                  <X size={20} />
+                </button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -909,7 +995,9 @@ export default function ComplianceDashboard() {
                     <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5 space-y-4">
                       <div>
                         <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">Record Reference</p>
-                        <p className="text-sm font-black text-white font-mono uppercase tracking-tighter">{verifyStatus.application_id}</p>
+                        <p className="text-sm font-black text-white font-mono uppercase tracking-tighter">
+                          {verifyStatus.compromised_records?.[0]?.application_id || verifyStatus.application_id}
+                        </p>
                       </div>
                       
                       <div className="pt-4 border-t border-white/5">
@@ -1019,7 +1107,7 @@ export default function ComplianceDashboard() {
                    <Button 
                     variant="primary" 
                     className="bg-rose-500 hover:bg-rose-400 text-black border-none"
-                    onClick={() => handleFlagAudit(verifyStatus.application_id)}
+                    onClick={() => handleFlagAudit(verifyStatus.compromised_records?.[0]?.application_id || verifyStatus.application_id)}
                    >
                      Flag for Manual Audit
                    </Button>

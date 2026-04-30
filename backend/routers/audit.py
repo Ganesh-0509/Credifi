@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from core.audit_chain import verify_chain
+from core.audit_chain import verify_chain, compute_hash
 from models.db import get_db, AuditLog
 from services.forensic_ai import analyze_ledger_anomaly
 from .auth import require_role
@@ -128,15 +128,66 @@ async def get_system_status(db: Session = Depends(get_db)):
 
 @router.post("/decision/{application_id}/restore", dependencies=[Depends(require_role(["compliance"]))])
 async def restore_record(application_id: str, db: Session = Depends(get_db)):
-    """Restores a record by re-verifying the chain and correcting database state if possible."""
-    # In a real system, we'd pull from an immutable shadow ledger or re-compute from raw inputs
-    # if the raw inputs themselves are signed. For this demo, we'll simulate a successful restoration.
-    entry = db.query(AuditLog).filter(AuditLog.application_id == application_id).first()
-    if not entry:
-        raise HTTPException(status_code=404, detail="Record not found")
+    """Restores a record by re-verifying the chain and correcting database state."""
+    # Find the record and the one before it to reconstruct the hash
+    records = db.query(AuditLog).order_by(AuditLog.id.asc()).all()
     
-    # Logic to 'heal' the record would go here.
-    return {"status": "success", "message": f"Record {application_id} restored to last verified state."}
+    expected_prev_hash = "GENESIS_HASH"
+    for r in records:
+        payload = {
+            "application_id": r.application_id,
+            "user_id": r.user_id,
+            "decision": r.decision,
+            "probability": r.probability,
+            "input_data": r.input_data,
+            "shap_values": r.shap_values,
+            "previous_hash": expected_prev_hash
+        }
+        if r.bank_name: payload["bank_name"] = r.bank_name
+        
+        recomputed_hash = compute_hash(payload)
+        
+        if r.application_id == application_id:
+            # Found the target! Heal it.
+            r.previous_hash = expected_prev_hash
+            r.current_hash = recomputed_hash
+            db.commit()
+            return {"status": "success", "message": f"Record {application_id} restored and re-signed."}
+            
+        expected_prev_hash = recomputed_hash
+        
+    raise HTTPException(status_code=404, detail="Record not found in chain sequence")
+
+@router.post("/batch/restore", dependencies=[Depends(require_role(["compliance"]))])
+async def batch_restore(db: Session = Depends(get_db)):
+    """Heals all compromised records in the entire chain."""
+    records = db.query(AuditLog).order_by(AuditLog.id.asc()).all()
+    restored_count = 0
+    
+    expected_prev_hash = "GENESIS_HASH"
+    for r in records:
+        payload = {
+            "application_id": r.application_id,
+            "user_id": r.user_id,
+            "decision": r.decision,
+            "probability": r.probability,
+            "input_data": r.input_data,
+            "shap_values": r.shap_values,
+            "previous_hash": expected_prev_hash
+        }
+        if r.bank_name: payload["bank_name"] = r.bank_name
+        
+        recomputed_hash = compute_hash(payload)
+        
+        if r.previous_hash != expected_prev_hash or r.current_hash != recomputed_hash:
+            r.previous_hash = expected_prev_hash
+            r.current_hash = recomputed_hash
+            restored_count += 1
+            
+        expected_prev_hash = recomputed_hash
+        
+    db.commit()
+    return {"status": "success", "message": f"Forensic healing complete. {restored_count} records re-signed."}
 
 @router.post("/decision/{application_id}/flag", dependencies=[Depends(require_role(["compliance"]))])
 async def flag_for_audit(application_id: str, db: Session = Depends(get_db)):
@@ -145,5 +196,4 @@ async def flag_for_audit(application_id: str, db: Session = Depends(get_db)):
     if not entry:
         raise HTTPException(status_code=404, detail="Record not found")
     
-    # We could update a 'flagged' column in the DB
     return {"status": "success", "message": f"Record {application_id} queued for manual forensic audit."}

@@ -114,22 +114,19 @@ def verify_chain(db: Session) -> dict:
     records = db.query(AuditLog).order_by(AuditLog.id.asc()).all()
     
     if not records:
-        return {"valid": True, "record_count": 0, "integrity_status": "Empty"}
+        return {"valid": True, "record_count": 0, "integrity_status": "Empty", "compromised_records": []}
 
     expected_prev_hash = "GENESIS_HASH"
+    compromised_records = []
     
     for record in records:
+        is_compromised = False
+        error_reason = ""
+        
         # 1. Verify the link to the previous record
         if record.previous_hash != expected_prev_hash:
-            return {
-                "valid": False, 
-                "error_at": record.id, 
-                "application_id": record.application_id,
-                "stored_hash": record.previous_hash,
-                "expected_hash": expected_prev_hash,
-                "timestamp": record.timestamp.isoformat(),
-                "reason": f"Chain link broken. Expected prev_hash {expected_prev_hash[:12]}..., found {record.previous_hash[:12]}..."
-            }
+            is_compromised = True
+            error_reason = "Chain link broken."
         
         # 2. Re-verify the data integrity of the current record
         payload = {
@@ -147,22 +144,29 @@ def verify_chain(db: Session) -> dict:
         recomputed_hash = compute_hash(payload)
         
         if record.current_hash != recomputed_hash:
-            return {
-                "valid": False, 
-                "error_at": record.id, 
+            is_compromised = True
+            error_reason = "Content tampering detected."
+
+        if is_compromised:
+            compromised_records.append({
+                "id": record.id,
                 "application_id": record.application_id,
                 "stored_hash": record.current_hash,
                 "recomputed_hash": recomputed_hash,
+                "expected_prev_hash": expected_prev_hash,
+                "stored_prev_hash": record.previous_hash,
                 "timestamp": record.timestamp.isoformat(),
-                "reason": "Content tampering detected. Payload hash mismatch."
-            }
+                "reason": error_reason
+            })
         
         # Advance the chain pointer
-        expected_prev_hash = record.current_hash
+        # Use recomputed hash for the next record to keep checking the rest of the chain even if this one was tampered
+        expected_prev_hash = recomputed_hash
         
     return {
-        "valid": True, 
+        "valid": len(compromised_records) == 0, 
         "record_count": len(records),
-        "integrity_status": "Secure",
+        "integrity_status": "Secure" if len(compromised_records) == 0 else "Compromised",
+        "compromised_records": compromised_records,
         "merkle_root": MerkleTree([r.current_hash for r in records]).get_root()
     }
