@@ -124,11 +124,35 @@ export default function RegulatorDashboard() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700 pb-12">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-4xl font-black text-white tracking-tighter uppercase">National <span className="text-amber-500 italic">Oversight</span> Hub</h1>
-          <p className="text-slate-500 mt-1 font-bold uppercase tracking-widest text-[10px]">Cross-Institutional Fairness Monitoring // Algorithmic Drift Analysis</p>
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+        <div className="flex items-center gap-6">
+          <div className="p-5 bg-amber-500 text-black rounded-[2rem] shadow-2xl shadow-amber-500/20">
+            <Scale size={32} />
+          </div>
+          <div>
+            <h1 className="text-4xl font-black text-white tracking-tighter uppercase">National <span className="text-amber-500 italic">Oversight</span> Hub</h1>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-1">Institutional Equity & Forensic Audit Interface</p>
+          </div>
         </div>
+
+        {/* Top-Level Forensic Color Key */}
+        <div className="flex items-center gap-6 p-4 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-md">
+           <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest mr-2">Chart Legend:</span>
+           {[
+             { color: "bg-[#fbbf24]", label: "MAJORITY BENCHMARK", desc: "Reference Group" },
+             { color: "bg-[#10b981]", label: "PROTECTED GROUP", desc: "Target Population" },
+             { color: "bg-amber-600", label: "EQUITY GAP", desc: "Parity Variance" }
+           ].map((c, i) => (
+             <div key={i} className="flex items-center gap-3 pr-6 border-r border-white/5 last:border-none">
+                <div className={`w-2.5 h-2.5 rounded-full ${c.color} shadow-[0_0_8px_rgba(255,255,255,0.1)]`} />
+                <div>
+                  <p className="text-[9px] font-black text-white tracking-tighter">{c.label}</p>
+                  <p className="text-[7px] font-bold text-slate-600 uppercase">{c.desc}</p>
+                </div>
+             </div>
+           ))}
+        </div>
+
         <Button variant="primary" onClick={handleExport} isLoading={isDownloading}>
           <Download size={18} className="mr-2" /> Export Audit Report
         </Button>
@@ -240,12 +264,12 @@ export default function RegulatorDashboard() {
                   />
                   <Bar dataKey="rate" radius={[8, 8, 0, 0]} barSize={60}>
                     {fairness?.group_breakdown && Object.entries(fairness.group_breakdown).map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell key={`cell-${index}`} fill={index === 0 ? '#fbbf24' : '#10b981'} />
                     ))}
                     <LabelList 
                       dataKey="rate" 
                       position="top" 
-                      style={{ fill: '#94a3b8', fontSize: '10px', fontWeight: '900' }} 
+                      style={{ fill: '#94a3b8', fontSize: '12px', fontWeight: '900' }} 
                       formatter={(v: any) => `${v}%`}
                     />
                   </Bar>
