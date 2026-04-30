@@ -34,7 +34,7 @@ def format_decision_result(prediction: dict, app_id: str, bank_name: str | None 
         # Format input value
         meta = feature_meta.get(factor, {"name": factor, "is_currency": False})
         if meta["is_currency"] and isinstance(input_val, (int, float)):
-            formatted_val = f"${input_val:,.0f}"
+            formatted_val = f"₹{input_val:,.0f}"
         else:
             formatted_val = str(input_val)
             

@@ -67,6 +67,15 @@ export default function ApplicantDashboard() {
   const [thinkingStep, setThinkingStep] = useState(0);
   const [riskContext, setRiskContext] = useState<any>(null);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [simValues, setSimValues] = useState<any>(null);
+
+  useEffect(() => {
+    if (result) {
+      setSimValues({ ...result.input_data });
+    } else {
+      setSimValues(null);
+    }
+  }, [result]);
 
   const fetchHistory = async () => {
     try {
@@ -285,7 +294,7 @@ export default function ApplicantDashboard() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
-                  label="Annual Income ($)"
+                  label="Annual Income (₹)"
                   type="number"
                   value={formData.income}
                   onChange={(e) => setFormData({ ...formData, income: parseFloat(e.target.value) })}
@@ -304,7 +313,7 @@ export default function ApplicantDashboard() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
-                  label="Loan Amount ($)"
+                  label="Loan Amount (₹)"
                   type="number"
                   value={formData.loan_amount}
                   onChange={(e) => setFormData({ ...formData, loan_amount: parseFloat(e.target.value) })}
@@ -800,15 +809,7 @@ export default function ApplicantDashboard() {
                         </div>
 
                         {(() => {
-                          const [simValues, setSimValues] = useState<any>(null);
-                          
-                          useEffect(() => {
-                            if (result && !simValues) {
-                              setSimValues({ ...result.input_data });
-                            }
-                          }, [result]);
-
-                          if (!simValues) return null;
+                          if (!simValues || !result) return null;
 
                           // Simplified SHAP-based simulation
                           let simProb = result.probability;

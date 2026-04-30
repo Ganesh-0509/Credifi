@@ -1,9 +1,9 @@
 export const formatCurrency = (val: number | string) => {
   const num = typeof val === 'string' ? parseFloat(val) : val;
   if (isNaN(num)) return val.toString();
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'INR',
     maximumFractionDigits: 0,
   }).format(num);
 };
