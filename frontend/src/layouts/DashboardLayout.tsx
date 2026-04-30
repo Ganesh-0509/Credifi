@@ -42,7 +42,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const items = getSidebarItems();
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-300 flex overflow-hidden">
+    <div className="min-h-screen bg-[#0a0a0b] text-slate-300 flex overflow-hidden">
       {/* Sidebar Overlay */}
       <AnimatePresence>
         {isSidebarOpen && (
@@ -57,7 +57,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       </AnimatePresence>
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-black border-r border-white/5 transition-transform duration-500 ease-[0.16, 1, 0.3, 1] transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#0a0a0b] border-r border-white/5 transition-transform duration-500 ease-[0.16, 1, 0.3, 1] transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="h-full flex flex-col p-8">
           {/* Brand */}
           <div className="flex items-center mb-12 px-2">
@@ -117,7 +117,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-amber-500/5 blur-[120px] rounded-full -z-10"></div>
         
         {/* Top Header */}
-        <header className="h-24 w-full flex items-center justify-between px-8 lg:px-12 z-40 bg-black/40 backdrop-blur-xl border-b border-white/5 sticky top-0">
+        <header className="h-24 w-full flex items-center justify-between px-8 lg:px-12 z-40 bg-[#0a0a0b]/40 backdrop-blur-xl border-b border-white/5 sticky top-0">
           {/* Left: Branding & Navigation */}
           <div className="flex items-center gap-6 shrink-0">
             <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-white transition-all active:scale-95 border border-white/10">
