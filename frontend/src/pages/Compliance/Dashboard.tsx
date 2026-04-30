@@ -50,6 +50,8 @@ export default function ComplianceDashboard() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showVerifyAnimation, setShowVerifyAnimation] = useState(false);
+  const [remediationRequests, setRemediationRequests] = useState<any[]>([]);
+  const [isRemediating, setIsRemediating] = useState(false);
 
   const fetchRecent = async () => {
     setLoading(true);
@@ -173,6 +175,45 @@ export default function ComplianceDashboard() {
       console.error(err);
     }
   };
+
+  const fetchRemediations = async () => {
+    try {
+      const res = await fetch('/api/audit/remediation/list', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setRemediationRequests(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleActionRemediation = async (id: number, action: string) => {
+    setIsRemediating(true);
+    try {
+      const res = await fetch(`/api/audit/remediation/${id}/action?action=${action}&notes=${encodeURIComponent("Authorized internal fairness correction applied to neural weights.")}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        alert(data.message);
+        fetchRemediations();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsRemediating(false);
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      fetchRecent();
+      fetchStats();
+      fetchRemediations();
+    }
+  }, [token]);
 
   const toggleSelection = (id: string) => {
     const newSelected = new Set(selectedIds);
@@ -955,6 +996,74 @@ export default function ComplianceDashboard() {
             </AnimatePresence>
           </div>
         </div>
+      </div>
+
+      {/* Regulatory Remediation Queue */}
+      <div className="mt-12 max-w-[1600px] mx-auto px-6">
+        <Card 
+          title="Regulatory Remediation Queue" 
+          subtitle="Formal corrective orders lodged by National Oversight (Regulators). Action required to maintain operational license."
+          headerAction={
+            <Button variant="secondary" onClick={fetchRemediations} className="h-8 text-[8px] bg-white/5 border-white/5">
+              <RefreshCw size={12} className="mr-2" /> Refresh Queue
+            </Button>
+          }
+        >
+          <div className="space-y-4">
+            {remediationRequests.length > 0 ? (
+              remediationRequests.map((req) => (
+                <div key={req.id} className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-white/[0.04] transition-all group">
+                  <div className="flex items-start gap-4">
+                    <div className={`p-3 rounded-2xl ${req.status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500'}`}>
+                      <ShieldAlert size={24} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-3">
+                        <h5 className="text-sm font-black text-white uppercase tracking-tight">Order #{req.id}: {req.attribute.toUpperCase()} Correction</h5>
+                        <Badge variant={req.status === 'pending' ? 'warning' : 'success'}>{req.status.toUpperCase()}</Badge>
+                      </div>
+                      <p className="text-[10px] text-slate-500 font-bold mt-1 leading-relaxed max-w-xl">{req.description}</p>
+                      <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-2">Lodged: {new Date(req.lodged_at).toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    {req.status === 'pending' && (
+                      <>
+                        <Button 
+                          variant="secondary" 
+                          className="h-10 text-[9px] px-6 bg-white/5 border-white/5"
+                          onClick={() => handleActionRemediation(req.id, 'approved')}
+                          disabled={isRemediating}
+                        >
+                          Acknowledge
+                        </Button>
+                        <Button 
+                          variant="primary" 
+                          className="h-10 text-[9px] px-6 bg-amber-500 hover:bg-amber-600 text-black border-none"
+                          onClick={() => handleActionRemediation(req.id, 'applied')}
+                          disabled={isRemediating}
+                        >
+                          Apply Correction
+                        </Button>
+                      </>
+                    )}
+                    {(req.status === 'applied' || req.status === 'approved') && (
+                      <div className="text-right">
+                        <p className="text-[10px] font-black text-emerald-500 uppercase">Status: {req.status}</p>
+                        <p className="text-[8px] text-slate-600 uppercase font-bold">{req.resolved_at ? new Date(req.resolved_at).toLocaleDateString() : 'Active'}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-12 text-center bg-white/[0.01] rounded-3xl border border-dashed border-white/5">
+                <ShieldCheck size={40} className="mx-auto text-slate-700 mb-4" />
+                <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">No pending regulatory orders detected</p>
+              </div>
+            )}
+          </div>
+        </Card>
       </div>
 
       {/* Anomaly Forensic Modal */}

@@ -98,6 +98,21 @@ export default function RegulatorDashboard() {
     }
   };
 
+  const handleLodgeRemediation = async (attr: string, desc: string) => {
+    try {
+      const res = await fetch(`/api/regulator/remediation/lodge?attribute=${attr}&description=${encodeURIComponent(desc)}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const COLORS = ['#fbbf24', '#10b981', '#f59e0b', '#34d399'];
 
   if (loading) return (
@@ -528,6 +543,13 @@ export default function RegulatorDashboard() {
                     <p className="text-[8px] text-slate-400 font-bold uppercase tracking-tight">
                       Adjust Neural Weights for {v.attribute} or apply ThresholdOptimizer.
                     </p>
+                    <Button 
+                      variant="primary" 
+                      className="w-full h-8 text-[8px] mt-2 bg-rose-500 hover:bg-rose-600"
+                      onClick={() => handleLodgeRemediation(v.attribute, `Official remediation order for ${v.attribute} due to detected 4/5ths rule violation (${v.ratio * 100}% ratio).`)}
+                    >
+                      Lodge Forensic Order
+                    </Button>
                   </div>
                 ))
               ) : (

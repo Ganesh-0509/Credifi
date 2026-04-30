@@ -322,3 +322,16 @@ async def generate_compliance_report(db: Session = Depends(get_db)):
         media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
+
+@router.post("/remediation/lodge", dependencies=[Depends(require_role(["regulator"]))])
+async def lodge_remediation(attribute: str, description: str, db: Session = Depends(get_db)):
+    """Lodges an official remediation order for the compliance team."""
+    from models.db import RemediationRequest
+    req = RemediationRequest(
+        attribute=attribute,
+        description=description,
+        status="pending"
+    )
+    db.add(req)
+    db.commit()
+    return {"status": "success", "message": f"Remediation order for {attribute} lodged successfully."}

@@ -53,6 +53,17 @@ class AuditLog(Base):
     current_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     bank_name: Mapped[str] = mapped_column(String(100), nullable=True)
 
+class RemediationRequest(Base):
+    __tablename__ = "remediation_requests"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    attribute: Mapped[str] = mapped_column(String(50), nullable=False) # e.g. income, gender
+    description: Mapped[str] = mapped_column(String(500), nullable=False)
+    status: Mapped[str] = mapped_column(String(20), default="pending") # pending, approved, applied
+    lodged_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    resolved_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    compliance_notes: Mapped[str] = mapped_column(String(500), nullable=True)
+
 # High-performance composite indexes for forensic retrieval
 Index('idx_user_audit_time', AuditLog.user_id, AuditLog.timestamp)
 Index('idx_app_id_lookup', AuditLog.application_id)

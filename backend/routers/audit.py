@@ -199,3 +199,27 @@ async def flag_for_audit(application_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Record not found")
     
     return {"status": "success", "message": f"Record {application_id} queued for manual forensic audit."}
+
+@router.get("/remediation/list", dependencies=[Depends(require_role(["compliance"]))])
+async def list_remediations(db: Session = Depends(get_db)):
+    """Lists all pending regulatory remediation requests."""
+    from models.db import RemediationRequest
+    return db.query(RemediationRequest).order_by(RemediationRequest.lodged_at.desc()).all()
+
+@router.post("/remediation/{req_id}/action", dependencies=[Depends(require_role(["compliance"]))])
+async def action_remediation(req_id: int, action: str, notes: str = "", db: Session = Depends(get_db)):
+    """Actions a regulatory remediation request (approve/apply)."""
+    from models.db import RemediationRequest
+    from datetime import datetime
+    req = db.query(RemediationRequest).filter(RemediationRequest.id == req_id).first()
+    if not req:
+        return {"status": "error", "message": "Request not found"}
+    
+    req.status = action
+    req.compliance_notes = notes
+    if action == "applied":
+        req.resolved_at = datetime.utcnow()
+    
+    db.add(req)
+    db.commit()
+    return {"status": "success", "message": f"Remediation for {req.attribute} marked as {action}."}
