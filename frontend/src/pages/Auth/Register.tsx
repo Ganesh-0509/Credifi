@@ -14,6 +14,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   
   const navigate = useNavigate();
 
@@ -114,6 +115,20 @@ export default function RegisterPage() {
               </label>
             </div>
 
+            <div className="pt-1">
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  checked={acceptedTerms} 
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="w-4 h-4 rounded border-white/10 bg-white/5 text-emerald-500 focus:ring-emerald-500/20"
+                />
+                <span className="text-[9px] font-black text-slate-500 group-hover:text-slate-300 uppercase tracking-widest transition-colors">
+                  I agree to the <Link to="/terms" target="_blank" className="text-amber-500 underline underline-offset-4 decoration-amber-500/30 hover:decoration-amber-500">Terms & Conditions</Link>
+                </span>
+              </label>
+            </div>
+
             <AnimatePresence>
               {isAdminMode && (
                 <motion.div 
@@ -172,8 +187,8 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            disabled={loading || success}
-            className="btn-gold w-full h-14 justify-center disabled:opacity-50"
+            disabled={loading || success || !acceptedTerms}
+            className="btn-gold w-full h-14 justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>

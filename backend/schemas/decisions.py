@@ -9,6 +9,8 @@ class CreditApplication(BaseModel):
     missed_payments: int
     employment_years: int
     bank_name: str | None = None
+    gender: str | None = "Not Specified"
+    geography: str | None = "Global"
 
 class DecisionResult(BaseModel):
     decision: str
@@ -18,3 +20,5 @@ class DecisionResult(BaseModel):
     explanation: list[str]
     suggestions: list[str]
     bank_name: str | None = None
+    input_data: dict | None = None
+    shap_values: dict | None = None

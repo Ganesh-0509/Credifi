@@ -124,7 +124,11 @@ def verify_chain(db: Session) -> dict:
             return {
                 "valid": False, 
                 "error_at": record.id, 
-                "reason": f"Chain link broken. Expected prev_hash {expected_prev_hash}, found {record.previous_hash}"
+                "application_id": record.application_id,
+                "stored_hash": record.previous_hash,
+                "expected_hash": expected_prev_hash,
+                "timestamp": record.timestamp.isoformat(),
+                "reason": f"Chain link broken. Expected prev_hash {expected_prev_hash[:12]}..., found {record.previous_hash[:12]}..."
             }
         
         # 2. Re-verify the data integrity of the current record
@@ -146,7 +150,11 @@ def verify_chain(db: Session) -> dict:
             return {
                 "valid": False, 
                 "error_at": record.id, 
-                "reason": "Content tampering detected. Hash mismatch."
+                "application_id": record.application_id,
+                "stored_hash": record.current_hash,
+                "recomputed_hash": recomputed_hash,
+                "timestamp": record.timestamp.isoformat(),
+                "reason": "Content tampering detected. Payload hash mismatch."
             }
         
         # Advance the chain pointer

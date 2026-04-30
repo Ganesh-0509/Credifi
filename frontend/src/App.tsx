@@ -11,6 +11,7 @@ import RegisterPage from './pages/Auth/Register';
 import ApplicantDashboard from './pages/Applicant/Dashboard';
 import ComplianceDashboard from './pages/Compliance/Dashboard';
 import RegulatorDashboard from './pages/Regulator/Dashboard';
+import TermsAndConditions from './pages/Legal/Terms';
 
 import { useAppContext } from './context/AppContext';
 
@@ -36,6 +37,7 @@ export default function App() {
       <Route path="/" element={<HeroPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/terms" element={<TermsAndConditions />} />
       
       {/* Dashboards */}
       <Route path="/dashboard/applicant" element={

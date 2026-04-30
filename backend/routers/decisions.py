@@ -11,15 +11,15 @@ from schemas.decisions import CreditApplication, DecisionResult
 
 router = APIRouter()
 
-def format_decision_result(prediction: dict, app_id: str, bank_name: str | None = None) -> dict:
-    explanation_map = {
-        "income": "Annual income",
-        "age": "Age",
-        "loan_amount": "Loan amount",
-        "debt_to_income_ratio": "Debt ratio",
-        "credit_score": "Credit score",
-        "missed_payments": "Payment history",
-        "employment_years": "Employment duration"
+def format_decision_result(prediction: dict, app_id: str, bank_name: str | None = None, input_data: dict | None = None) -> dict:
+    feature_meta = {
+        "income": {"name": "annual income", "is_currency": True},
+        "age": {"name": "age", "is_currency": False},
+        "loan_amount": {"name": "loan amount", "is_currency": True},
+        "debt_to_income_ratio": {"name": "debt ratio", "is_currency": False},
+        "credit_score": {"name": "credit score", "is_currency": False},
+        "missed_payments": {"name": "missed payments", "is_currency": False},
+        "employment_years": {"name": "employment duration", "is_currency": False}
     }
 
     explanations = []
@@ -29,21 +29,26 @@ def format_decision_result(prediction: dict, app_id: str, bank_name: str | None 
 
     for factor in top_factors:
         val = shap_vals.get(factor, 0)
-        # If decision is approve, positive SHAP helps. If reject, negative SHAP hurts.
-        # Actually, SHAP usually means: positive = increases probability of default (bad), negative = decreases probability (good).
-        # Our model: decision is based on probability.
-        is_positive_influence = val < 0 # Decreases risk
+        input_val = input_data.get(factor, "N/A") if input_data else "N/A"
         
-        if decision == 'approve':
-            if is_positive_influence:
-                explanations.append(f"Strong {explanation_map.get(factor, factor)} significantly bolstered your profile.")
-            else:
-                explanations.append(f"{explanation_map.get(factor, factor)} was a minor risk factor but within limits.")
+        # Format input value
+        meta = feature_meta.get(factor, {"name": factor, "is_currency": False})
+        if meta["is_currency"] and isinstance(input_val, (int, float)):
+            formatted_val = f"${input_val:,.0f}"
         else:
-            if not is_positive_influence:
-                explanations.append(f"Elevated {explanation_map.get(factor, factor)} was a primary driver for rejection.")
-            else:
-                explanations.append(f"Despite healthy {explanation_map.get(factor, factor)}, other factors outweighed it.")
+            formatted_val = str(input_val)
+            
+        direction = "approval" if val < 0 else "rejection"
+        magnitude = abs(val)
+        
+        if val < 0:
+            qualifier = "this bolstered your profile" if magnitude > 0.5 else "this is well within the safe range"
+        else:
+            qualifier = "this was a primary driver for risk" if magnitude > 0.5 else "this was a minor risk factor"
+            
+        explanations.append(
+            f"Your {meta['name']} of {formatted_val} contributed +{magnitude:.2f} toward {direction} — {qualifier}."
+        )
 
     suggestions = []
     if decision == 'reject':
@@ -69,7 +74,9 @@ def format_decision_result(prediction: dict, app_id: str, bank_name: str | None 
         "top_factors": top_factors,
         "explanation": explanations[:3],
         "suggestions": suggestions[:3],
-        "bank_name": bank_name or "Global Trust Bank" # Standard fallback if missing
+        "bank_name": bank_name or "Global Trust Bank",
+        "input_data": input_data,
+        "shap_values": shap_vals
     }
 
 @router.post("/apply", response_model=DecisionResult, dependencies=[Depends(require_role(["applicant"]))])
@@ -94,7 +101,7 @@ async def apply_for_credit(
         bank_name=application.bank_name
     )
 
-    return format_decision_result(prediction, app_id, application.bank_name)
+    return format_decision_result(prediction, app_id, application.bank_name, application.dict())
 
 @router.get("/history", dependencies=[Depends(require_role(["applicant"]))])
 async def get_application_history(
@@ -136,4 +143,40 @@ async def get_history_detail(
         "explanations": record.shap_values
     }
     
-    return format_decision_result(prediction, record.application_id, record.bank_name)
+    return format_decision_result(prediction, record.application_id, record.bank_name, record.input_data)
+
+@router.get("/context/{application_id}", dependencies=[Depends(require_role(["applicant"]))])
+async def get_risk_context(
+    application_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    from models.db import AuditLog
+    # 1. Fetch current application
+    current_record = db.query(AuditLog).filter(
+        AuditLog.application_id == application_id,
+        AuditLog.user_id == current_user.id
+    ).first()
+    
+    if not current_record:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    # 2. Fetch all historical probabilities for comparison
+    all_probs = [r[0] for r in db.query(AuditLog.probability).all()]
+    
+    if not all_probs:
+        return {"percentile": 0, "total_comparison": 0}
+        
+    # 3. Calculate percentile (how many have HIGHER risk than me?)
+    # Risk is higher when probability is higher.
+    # "Better than X%" means X% of people have higher risk (higher probability).
+    better_than = [p for p in all_probs if p > current_record.probability]
+    percentile = (len(better_than) / len(all_probs)) * 100
+    
+    return {
+        "percentile": round(percentile, 1),
+        "total_comparison": len(all_probs),
+        "risk_score": round(current_record.probability * 100, 1),
+        "status": "Elite" if percentile > 90 else ("Strong" if percentile > 70 else "Developing")
+    }

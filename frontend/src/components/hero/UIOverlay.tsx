@@ -334,6 +334,62 @@ export default function UIOverlay({ navigate }: UIOverlayProps) {
         </motion.div>
       </PlatformSection>
 
+      <PlatformSection className="flex-col pt-32 pb-20 pointer-events-auto">
+        <footer className="w-full border-t border-white/5 pt-20">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-24 mb-16">
+            <div className="md:col-span-2">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-10 h-10 rounded-xl border border-amber-500/20 p-1 bg-white/5 overflow-hidden">
+                  <img src="/brand-logo.jpeg" alt="Credifi Logo" className="w-full h-full object-cover rounded-lg" />
+                </div>
+                <span className="text-xl font-black uppercase tracking-tighter text-white">Credifi<span className="text-amber-500 italic">.</span></span>
+              </div>
+              <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] leading-relaxed max-w-sm mb-8">
+                Securing the future of global credit with autonomous fairness and cryptographic accountability.
+              </p>
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-600 hover:text-white transition-colors cursor-pointer border border-white/5">
+                  <Globe size={14} />
+                </div>
+                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-600 hover:text-white transition-colors cursor-pointer border border-white/5">
+                  <Activity size={14} />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-[10px] font-black text-white uppercase tracking-[0.4em] mb-8">Legal & Compliance</h4>
+              <ul className="space-y-4">
+                <li><button onClick={() => navigate('/terms')} className="text-[9px] font-black text-slate-500 hover:text-amber-500 uppercase tracking-widest transition-colors">Terms of Service</button></li>
+                <li><button onClick={() => navigate('/terms')} className="text-[9px] font-black text-slate-500 hover:text-amber-500 uppercase tracking-widest transition-colors">Privacy Policy</button></li>
+                <li><button onClick={() => navigate('/terms')} className="text-[9px] font-black text-slate-500 hover:text-amber-500 uppercase tracking-widest transition-colors">Security Standards</button></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-[10px] font-black text-white uppercase tracking-[0.4em] mb-8">Resources</h4>
+              <ul className="space-y-4">
+                <li><button onClick={() => navigate('/login')} className="text-[9px] font-black text-slate-500 hover:text-amber-500 uppercase tracking-widest transition-colors">Documentation</button></li>
+                <li><button onClick={() => navigate('/login')} className="text-[9px] font-black text-slate-500 hover:text-amber-500 uppercase tracking-widest transition-colors">API Reference</button></li>
+                <li><button onClick={() => navigate('/login')} className="text-[9px] font-black text-slate-500 hover:text-amber-500 uppercase tracking-widest transition-colors">Status Node</button></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto pt-12 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-6">
+            <p className="text-[8px] font-black text-slate-700 uppercase tracking-[0.5em]">© 2026 Credifi Institutional Engine · All Rights Reserved</p>
+            <div className="flex gap-8">
+               <span className="text-[8px] font-black text-emerald-500/50 uppercase tracking-widest flex items-center gap-2">
+                 <Shield size={10} /> SOC 2 Certified
+               </span>
+               <span className="text-[8px] font-black text-amber-500/50 uppercase tracking-widest flex items-center gap-2">
+                 <Lock size={10} /> AES-256 Encrypted
+               </span>
+            </div>
+          </div>
+        </footer>
+      </PlatformSection>
+    </div>
     </div>
   );
 }
