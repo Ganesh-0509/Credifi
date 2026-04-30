@@ -275,9 +275,41 @@ export default function ComplianceDashboard() {
     }
   };
 
+  const fetchRemediations = async () => {
+    try {
+      const res = await fetch('/api/audit/remediation/list', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setRemediationRequests(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleActionRemediation = async (reqId: number, action: string) => {
+    setIsRemediating(true);
+    try {
+      const res = await fetch(`/api/audit/remediation/${reqId}/action?action=${action}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        alert(data.message);
+        fetchRemediations();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsRemediating(false);
+    }
+  };
+
   useEffect(() => {
     fetchRecent();
     fetchStats();
+    fetchRemediations();
   }, [token]);
 
   return (

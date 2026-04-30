@@ -47,19 +47,21 @@ export default function RegulatorDashboard() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [complianceSummary, setComplianceSummary] = useState<any[]>([]);
   const [fairnessTrend, setFairnessTrend] = useState<any[]>([]);
+  const [remediationRequests, setRemediationRequests] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       if (!token) return;
       try {
         const headers = { 'Authorization': `Bearer ${token}` };
-        const [fRes, sRes, dRes, lRes, cRes, tRes] = await Promise.all([
+        const [fRes, sRes, dRes, lRes, cRes, tRes, rRes] = await Promise.all([
           fetch(`/api/regulator/fairness?dimension=${dimension}`, { headers }),
           fetch('/api/regulator/summary', { headers }),
           fetch('/api/regulator/drift', { headers }),
           fetch('/api/regulator/logs', { headers }),
           fetch('/api/regulator/compliance/summary', { headers }),
-          fetch(`/api/regulator/fairness/trend?dimension=${dimension}`, { headers })
+          fetch(`/api/regulator/fairness/trend?dimension=${dimension}`, { headers }),
+          fetch('/api/audit/remediation/list', { headers })
         ]);
         
         if (fRes.ok) setFairness(await fRes.json());
@@ -68,6 +70,7 @@ export default function RegulatorDashboard() {
         if (lRes.ok) setLogs(await lRes.json());
         if (cRes.ok) setComplianceSummary(await cRes.json());
         if (tRes.ok) setFairnessTrend(await tRes.json());
+        if (rRes.ok) setRemediationRequests(await rRes.json());
       } catch (err) {
         console.error("Regulatory fetch error:", err);
       } finally {
@@ -107,6 +110,14 @@ export default function RegulatorDashboard() {
       const data = await res.json();
       if (data.status === 'success') {
         alert(data.message);
+        // Refresh compliance summary and remediation list
+        const headers = { 'Authorization': `Bearer ${token}` };
+        const [cRes, rRes] = await Promise.all([
+          fetch('/api/regulator/compliance/summary', { headers }),
+          fetch('/api/audit/remediation/list', { headers })
+        ]);
+        if (cRes.ok) setComplianceSummary(await cRes.json());
+        if (rRes.ok) setRemediationRequests(await rRes.json());
       }
     } catch (err) {
       console.error(err);
@@ -521,26 +532,41 @@ export default function RegulatorDashboard() {
       </Card>
 
       <Card title="Institutional Remediation" subtitle="Automated suggestions to improve equity scores." className="mb-12">
-           <div className="space-y-4">
+            <div className="space-y-4">
               {complianceSummary.filter(s => s.status === 'VIOLATION').length > 0 ? (
-                complianceSummary.filter(s => s.status === 'VIOLATION').map((v, i) => (
-                  <div key={i} className="p-5 bg-rose-500/5 border border-rose-500/20 rounded-3xl space-y-3">
-                    <div className="flex items-center gap-3">
-                      <AlertCircle size={16} className="text-rose-500" />
-                      <span className="text-[10px] font-black text-white uppercase tracking-tighter">Fix {v.attribute}: {v.lowest_group} Gap</span>
+                complianceSummary.filter(s => s.status === 'VIOLATION').map((v, i) => {
+                  const existingReq = remediationRequests.find(r => r.attribute.toLowerCase() === v.attribute.toLowerCase() && (r.status === 'pending' || r.status === 'approved' || r.status === 'applied'));
+                  
+                  return (
+                    <div key={i} className={`p-5 rounded-3xl space-y-3 ${existingReq ? 'bg-emerald-500/5 border border-emerald-500/20' : 'bg-rose-500/5 border border-rose-500/20'}`}>
+                      <div className="flex items-center gap-3">
+                        {existingReq ? <ShieldCheck size={16} className="text-emerald-500" /> : <AlertCircle size={16} className="text-rose-500" />}
+                        <span className="text-[10px] font-black text-white uppercase tracking-tighter">
+                          {v.attribute}: {v.lowest_group} Gap {existingReq && `(${existingReq.status.toUpperCase()})`}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight leading-relaxed">
+                        {existingReq 
+                          ? `A remediation order for ${v.attribute} is currently ${existingReq.status}. No further action required from Oversight at this time.`
+                          : `Adjust Neural Weights for ${v.attribute} or apply ThresholdOptimizer to resolve the ${v.ratio * 100}% ratio discrepancy.`}
+                      </p>
+                      {!existingReq ? (
+                        <Button 
+                          variant="primary" 
+                          className="w-full h-10 text-[10px] mt-2 bg-rose-500 hover:bg-rose-600 border-none text-black font-black uppercase tracking-widest"
+                          onClick={() => handleLodgeRemediation(v.attribute, `Official remediation order for ${v.attribute} due to detected 4/5ths rule violation (${v.ratio * 100}% ratio).`)}
+                        >
+                          Lodge Forensic Order
+                        </Button>
+                      ) : (
+                        <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10 text-[8px] font-black text-slate-300 uppercase tracking-widest">
+                          <Activity size={10} className="text-amber-500 animate-pulse" />
+                          Remediation Sequence Active
+                        </div>
+                      )}
                     </div>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight leading-relaxed">
-                      Adjust Neural Weights for {v.attribute} or apply ThresholdOptimizer to resolve the {v.ratio * 100}% ratio discrepancy.
-                    </p>
-                    <Button 
-                      variant="primary" 
-                      className="w-full h-10 text-[10px] mt-2 bg-rose-500 hover:bg-rose-600 border-none text-black font-black uppercase tracking-widest"
-                      onClick={() => handleLodgeRemediation(v.attribute, `Official remediation order for ${v.attribute} due to detected 4/5ths rule violation (${v.ratio * 100}% ratio).`)}
-                    >
-                      Lodge Forensic Order
-                    </Button>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="h-full flex flex-col items-center justify-center p-12 text-center space-y-4 bg-emerald-500/5 border border-emerald-500/10 rounded-3xl">
                   <ShieldCheck size={40} className="text-emerald-500" />
@@ -550,7 +576,7 @@ export default function RegulatorDashboard() {
                   </div>
                 </div>
               )}
-           </div>
+            </div>
         </Card>
 
       {/* Forensic Logs Modal */}
@@ -634,6 +660,54 @@ export default function RegulatorDashboard() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Remediation History Tracker */}
+      <div className="mt-12">
+        <Card title="Forensic Remediation Tracker" subtitle="Real-time status of corrective mandates dispatched to compliance nodes.">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="text-[9px] font-black text-slate-300 uppercase tracking-widest border-b border-white/5">
+                  <th className="px-6 py-4">ID</th>
+                  <th className="px-6 py-4">Attribute</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Lodged At</th>
+                  <th className="px-6 py-4 text-right">Last Update</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {remediationRequests.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center">
+                      <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">No active remediation history</p>
+                    </td>
+                  </tr>
+                ) : (
+                  remediationRequests.map((req) => (
+                    <tr key={req.id} className="group hover:bg-white/[0.01] transition-colors">
+                      <td className="px-6 py-4 text-xs font-black text-white">#{req.id}</td>
+                      <td className="px-6 py-4">
+                        <span className="px-2 py-1 bg-white/5 rounded-lg text-[9px] font-black text-amber-500 uppercase tracking-tight border border-white/5">{req.attribute}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge variant={req.status === 'pending' ? 'warning' : 'success'} className="text-[8px]">
+                          {req.status.toUpperCase()}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4 text-[9px] font-bold text-slate-300">
+                        {new Date(req.lodged_at).toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 text-right text-[9px] font-bold text-slate-300">
+                        {req.resolved_at ? new Date(req.resolved_at).toLocaleString() : 'PENDING'}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }
