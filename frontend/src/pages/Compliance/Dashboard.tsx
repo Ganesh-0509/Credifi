@@ -133,6 +133,8 @@ export default function ComplianceDashboard() {
       if (data.status === 'success') {
         alert(data.message);
         fetchRecent();
+        fetchStats();
+        setVerifyStatus(prev => prev ? { ...prev, valid: true, compromised_records: [] } : null);
       }
     } catch (err) {
       console.error(err);
@@ -165,6 +167,7 @@ export default function ComplianceDashboard() {
         alert(data.message);
         setVerifyStatus(null);
         fetchRecent();
+        fetchStats();
       }
     } catch (err) {
       console.error(err);
@@ -339,7 +342,7 @@ export default function ComplianceDashboard() {
               <div>
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Chain Integrity</p>
                 <h3 className={`text-2xl font-black tracking-tighter ${verifyStatus?.valid === false ? 'text-rose-500' : 'text-emerald-500'}`}>
-                  {verifyStatus ? (verifyStatus.valid ? 'SECURE' : 'COMPROMISED') : 'STABLE'}
+                  {verifyStatus ? (verifyStatus.valid ? 'SECURE' : 'COMPROMISED') : 'SECURE'}
                 </h3>
               </div>
             </div>

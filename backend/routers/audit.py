@@ -151,6 +151,7 @@ async def restore_record(application_id: str, db: Session = Depends(get_db)):
             # Found the target! Heal it.
             r.previous_hash = expected_prev_hash
             r.current_hash = recomputed_hash
+            db.add(r)
             db.commit()
             return {"status": "success", "message": f"Record {application_id} restored and re-signed."}
             
@@ -182,6 +183,7 @@ async def batch_restore(db: Session = Depends(get_db)):
         if r.previous_hash != expected_prev_hash or r.current_hash != recomputed_hash:
             r.previous_hash = expected_prev_hash
             r.current_hash = recomputed_hash
+            db.add(r)
             restored_count += 1
             
         expected_prev_hash = recomputed_hash
