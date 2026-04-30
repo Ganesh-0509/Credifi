@@ -16,7 +16,7 @@ def generate_regulator_pdf(fairness_data, summary_data, drift_data, compliance_s
         'TitleStyle',
         parent=styles['Heading1'],
         fontSize=24,
-        textColor=colors.hexColor('#10b981'),
+        textColor=colors.HexColor('#10b981'),
         alignment=1,
         spaceAfter=30
     )
@@ -72,7 +72,7 @@ def generate_regulator_pdf(fairness_data, summary_data, drift_data, compliance_s
     
     t = Table(fairness_table_data, colWidths=[1.5*inch, 2.5*inch, 1*inch, 1*inch])
     t.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.hexColor('#f3f4f6')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f3f4f6')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
@@ -100,7 +100,7 @@ def generate_regulator_pdf(fairness_data, summary_data, drift_data, compliance_s
     
     ct = Table(compliance_data, colWidths=[1*inch, 1.5*inch, 1.5*inch, 1*inch, 1*inch])
     ct.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.hexColor('#f3f4f6')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f3f4f6')),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
@@ -121,7 +121,7 @@ def generate_regulator_pdf(fairness_data, summary_data, drift_data, compliance_s
     
     pt = Table(psi_data, colWidths=[2.5*inch, 1.5*inch, 1.5*inch])
     pt.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.hexColor('#f3f4f6')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f3f4f6')),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
     ]))
@@ -152,7 +152,7 @@ def generate_individual_report_pdf(record: dict):
         'TitleStyle',
         parent=styles['Heading1'],
         fontSize=24,
-        textColor=colors.hexColor('#f59e0b'),
+        textColor=colors.HexColor('#f59e0b'),
         alignment=1,
         spaceAfter=30
     )
@@ -178,7 +178,7 @@ def generate_individual_report_pdf(record: dict):
 
     # --- Decision ---
     elements.append(Paragraph("1. Forensic Decision Summary", header_style))
-    decision_color = colors.hexColor('#10b981') if record.get('decision') == 'approve' else colors.hexColor('#f43f5e')
+    decision_color = colors.HexColor('#10b981') if record.get('decision') == 'approve' else colors.HexColor('#f43f5e')
     elements.append(Paragraph(f"Result: <font color={decision_color}><b>{record.get('decision', 'N/A').upper()}</b></font>", styles['Normal']))
     elements.append(Paragraph(f"Neural Risk Score: {record.get('probability', 0)*100:.2f}%", styles['Normal']))
     elements.append(Spacer(1, 12))
@@ -199,7 +199,7 @@ def generate_individual_report_pdf(record: dict):
     
     ft = Table([['Feature', 'Impact', 'Direction']] + factors, colWidths=[2.5*inch, 1.5*inch, 1.5*inch])
     ft.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.hexColor('#f3f4f6')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f3f4f6')),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
     ]))
@@ -213,7 +213,7 @@ def generate_individual_report_pdf(record: dict):
     
     it = Table([['Parameter', 'Value']] + inputs, colWidths=[2.5*inch, 3*inch])
     it.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.hexColor('#f3f4f6')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f3f4f6')),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
     ]))
     elements.append(it)

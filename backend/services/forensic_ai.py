@@ -7,7 +7,12 @@ import json
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    # Using 'gemini-1.5-flash' which is the standard fast model.
+    # Fallback to gemini-pro if flash is not available in the current region/account
+    try:
+        model = genai.GenerativeModel('gemini-1.5-flash')
+    except:
+        model = genai.GenerativeModel('gemini-pro')
 else:
     model = None
 
