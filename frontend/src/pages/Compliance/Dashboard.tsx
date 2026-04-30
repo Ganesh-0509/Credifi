@@ -286,7 +286,7 @@ export default function ComplianceDashboard() {
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Audit <span className="text-amber-500 italic">Forensic</span></h1>
-            <p className="text-slate-500 mt-1 font-bold uppercase tracking-widest text-[10px]">Real-time Decision Ledger // Integrity Chain Node</p>
+            <p className="text-slate-200 mt-1 font-bold uppercase tracking-widest text-[10px]">Real-time Decision Ledger // Integrity Chain Node</p>
           </div>
           <div className="flex gap-3">
             {selectedIds.size > 0 && (
@@ -354,7 +354,7 @@ export default function ComplianceDashboard() {
                 <Database size={24} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Decisions Today</p>
+                <p className="text-[10px] font-black text-slate-200 uppercase tracking-widest mb-1">Total Decisions Today</p>
                 <h3 className="text-2xl font-black text-white tracking-tighter">{systemStatus?.today_count || 0}</h3>
               </div>
             </div>
@@ -366,7 +366,7 @@ export default function ComplianceDashboard() {
                 <ShieldAlert size={24} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Anomaly Count</p>
+                <p className="text-[10px] font-black text-slate-200 uppercase tracking-widest mb-1">Anomaly Count</p>
                 <h3 className={`text-2xl font-black tracking-tighter ${systemStatus?.total_anomalies > 0 ? 'text-rose-500' : 'text-emerald-500'}`}>
                   {systemStatus?.total_anomalies || 0}
                 </h3>
@@ -381,7 +381,7 @@ export default function ComplianceDashboard() {
                 <Lock size={24} className={verifyStatus?.valid ? "animate-bounce" : ""} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Chain Integrity</p>
+                <p className="text-[10px] font-black text-slate-200 uppercase tracking-widest mb-1">Chain Integrity</p>
                 <h3 className={`text-2xl font-black tracking-tighter ${verifyStatus?.valid === false ? 'text-rose-500' : 'text-emerald-500'}`}>
                   {verifyStatus ? (verifyStatus.valid ? 'SECURE' : 'COMPROMISED') : 'SECURE'}
                 </h3>
@@ -395,7 +395,7 @@ export default function ComplianceDashboard() {
                 <Activity size={24} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Avg Confidence Score</p>
+                <p className="text-[10px] font-black text-slate-200 uppercase tracking-widest mb-1">Avg Confidence Score</p>
                 <h3 className="text-2xl font-black text-white tracking-tighter">
                   {formatPercent(systemStatus?.avg_confidence || 0)}
                 </h3>
@@ -413,17 +413,17 @@ export default function ComplianceDashboard() {
               </div>
               <div>
                 <h4 className="text-xs font-black text-white uppercase tracking-widest">Forensic Integrity Chain</h4>
-                <p className="text-[8px] font-bold text-slate-600 uppercase tracking-widest mt-0.5">Immutable Hash Sequence</p>
+                <p className="text-[8px] font-bold text-slate-300 uppercase tracking-widest mt-0.5">Immutable Hash Sequence</p>
               </div>
             </div>
             <div className="flex items-center gap-6">
                <div className="flex items-center gap-2">
                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                 <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Verified Block</span>
+                 <span className="text-[8px] font-black text-slate-200 uppercase tracking-widest">Verified Block</span>
                </div>
                <div className="flex items-center gap-2">
                  <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
-                 <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Genesis Root</span>
+                 <span className="text-[8px] font-black text-slate-200 uppercase tracking-widest">Genesis Root</span>
                </div>
             </div>
           </div>
@@ -433,7 +433,7 @@ export default function ComplianceDashboard() {
             <div className="flex-shrink-0 group">
               <div className="w-32 h-20 rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center bg-white/[0.02] group-hover:bg-white/[0.05] transition-all">
                 <Lock size={16} className="text-slate-700 mb-2" />
-                <span className="text-[7px] font-black text-slate-600 uppercase tracking-[0.2em]">Genesis Root</span>
+                <span className="text-[7px] font-black text-slate-300 uppercase tracking-[0.2em]">Genesis Root</span>
               </div>
             </div>
 
@@ -449,12 +449,12 @@ export default function ComplianceDashboard() {
                 >
                   <div className={`w-40 p-4 rounded-2xl border-2 transition-all relative ${selectedApp?.application_id === d.application_id ? 'bg-amber-500/10 border-amber-500/40 shadow-2xl shadow-amber-500/10' : 'bg-white/5 border-white/5 hover:border-white/20'}`}>
                     <div className="flex justify-between items-start mb-2">
-                       <span className="text-[8px] font-black text-slate-500 uppercase">Block #{decisions.length - i}</span>
+                       <span className="text-[8px] font-black text-slate-200 uppercase">Block #{decisions.length - i}</span>
                        <div className={`w-1.5 h-1.5 rounded-full ${d.decision === 'approve' ? 'bg-emerald-500' : 'bg-rose-500'} shadow-[0_0_8px_currentColor]`} />
                     </div>
                     <p className="text-[9px] font-black text-white truncate mb-1 uppercase tracking-tight">{d.application_id.slice(0, 12)}</p>
                     <div className="flex items-center justify-between">
-                       <span className="text-[6px] font-mono text-slate-600 truncate max-w-[80px]">{d.current_hash.slice(0, 12)}...</span>
+                       <span className="text-[6px] font-mono text-slate-300 truncate max-w-[80px]">{d.current_hash.slice(0, 12)}...</span>
                        <Badge variant={d.decision === 'approve' ? 'success' : 'error'} className="text-[5px] px-1 py-0">VLD</Badge>
                     </div>
                   </div>
@@ -521,7 +521,7 @@ export default function ComplianceDashboard() {
                       <p className="text-[8px] font-black uppercase tracking-widest opacity-40">Cryptographic Discrepancy</p>
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-2">
-                           <span className="text-[7px] font-black px-1.5 py-0.5 bg-white/5 rounded text-slate-500 tracking-widest">STORED</span>
+                           <span className="text-[7px] font-black px-1.5 py-0.5 bg-white/5 rounded text-slate-200 tracking-widest">STORED</span>
                            <p className="text-[9px] font-mono opacity-60 truncate">{comp.stored_hash?.slice(0, 32)}...</p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -534,7 +534,7 @@ export default function ComplianceDashboard() {
                       <p className="text-[8px] font-black uppercase tracking-widest opacity-40">Last Verified State</p>
                       <div className="flex items-center gap-3">
                         <div className="p-2 bg-white/5 rounded-lg">
-                          <History size={14} className="text-slate-500" />
+                          <History size={14} className="text-slate-200" />
                         </div>
                         <p className="text-xs font-black text-white tracking-tighter">
                           {new Date(comp.timestamp).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
@@ -635,11 +635,11 @@ export default function ComplianceDashboard() {
                   </div>
                   <div>
                     <h3 className="font-black text-white uppercase tracking-tight text-xl">Decision Ledger</h3>
-                    <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mt-0.5">Verified Transactions</p>
+                    <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mt-0.5">Verified Transactions</p>
                   </div>
                 </div>
                 <div className="relative group">
-                  <Search className="absolute left-4 top-3.5 w-4 h-4 text-slate-600 group-focus-within:text-amber-500 transition-colors" />
+                  <Search className="absolute left-4 top-3.5 w-4 h-4 text-slate-300 group-focus-within:text-amber-500 transition-colors" />
                   <input 
                     type="text" 
                     placeholder="FILTER NODE..." 
@@ -651,7 +651,7 @@ export default function ComplianceDashboard() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 border-b border-white/5">
+                    <tr className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 border-b border-white/5">
                       <th className="px-8 py-5 w-10">
                         <input 
                           type="checkbox" 
@@ -685,7 +685,7 @@ export default function ComplianceDashboard() {
                         <td className="px-8 py-6" onClick={() => setSelectedApp(d)}>
                           <div className="flex items-center gap-3">
                             <div className={`w-2 h-2 rounded-full ${d.decision === 'approve' ? 'bg-emerald-500' : 'bg-rose-500'} shadow-[0_0_8px_currentColor] opacity-40 group-hover:opacity-100 transition-opacity`}></div>
-                            <span className="font-black text-xs text-slate-500 group-hover:text-white transition-colors tracking-tight">{d.application_id}</span>
+                            <span className="font-black text-xs text-slate-200 group-hover:text-white transition-colors tracking-tight">{d.application_id}</span>
                           </div>
                         </td>
                         <td className="px-8 py-6" onClick={() => setSelectedApp(d)}>
@@ -697,7 +697,7 @@ export default function ComplianceDashboard() {
                           <span className="text-sm font-black text-white tracking-tighter">{formatPercent(d.probability)}</span>
                         </td>
                         <td className="px-8 py-6" onClick={() => setSelectedApp(d)}>
-                          <div className="flex items-center gap-2 text-slate-600 text-[10px] font-black tracking-widest uppercase">
+                          <div className="flex items-center gap-2 text-slate-300 text-[10px] font-black tracking-widest uppercase">
                             <History size={12} className="opacity-40" />
                             {new Date(d.timestamp).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
                           </div>
@@ -725,7 +725,7 @@ export default function ComplianceDashboard() {
                     <FileSearch size={40} />
                   </div>
                   <h4 className="text-white font-black uppercase tracking-tighter text-xl">Forensic Ready</h4>
-                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mt-4 leading-loose">Select a ledger entry for neural contribution analysis and hash verification.</p>
+                  <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mt-4 leading-loose">Select a ledger entry for neural contribution analysis and hash verification.</p>
                 </motion.div>
               ) : (
                 <motion.div 
@@ -739,13 +739,13 @@ export default function ComplianceDashboard() {
                     <div className="flex border-b border-white/5 bg-white/[0.02]">
                       <button 
                         onClick={() => setActiveTab('forensic')}
-                        className={`flex-1 py-4 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'forensic' ? 'text-amber-500 bg-white/[0.03] border-b-2 border-amber-500' : 'text-slate-600 hover:text-slate-400'}`}
+                        className={`flex-1 py-4 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'forensic' ? 'text-amber-500 bg-white/[0.03] border-b-2 border-amber-500' : 'text-slate-300 hover:text-slate-400'}`}
                       >
                         <Fingerprint size={14} /> Forensic Audit
                       </button>
                       <button 
                         onClick={() => setActiveTab('math')}
-                        className={`flex-1 py-4 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'math' ? 'text-amber-500 bg-white/[0.03] border-b-2 border-amber-500' : 'text-slate-600 hover:text-slate-400'}`}
+                        className={`flex-1 py-4 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'math' ? 'text-amber-500 bg-white/[0.03] border-b-2 border-amber-500' : 'text-slate-300 hover:text-slate-400'}`}
                       >
                         <Calculator size={14} /> Model Calculations
                       </button>
@@ -762,13 +762,13 @@ export default function ComplianceDashboard() {
                             className="space-y-10"
                           >
                             <div className="flex justify-between items-center">
-                              <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Neural Inspector // ID: {selectedApp.application_id.slice(0, 12)}</h4>
+                              <h4 className="text-[10px] font-black text-slate-200 uppercase tracking-widest">Neural Inspector // ID: {selectedApp.application_id.slice(0, 12)}</h4>
                               <Badge variant="info">Neural Forensic Analysis</Badge>
                             </div>
 
                             {/* Input Data Summary */}
                             <div>
-                              <h5 className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-6 flex items-center gap-2">
+                              <h5 className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-6 flex items-center gap-2">
                                  <Activity size={12} className="text-amber-500" /> System Inputs
                               </h5>
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -780,7 +780,7 @@ export default function ComplianceDashboard() {
 
                                   return (
                                     <div key={k} className="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
-                                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">{k.replace(/_/g, ' ')}</p>
+                                      <p className="text-[9px] font-black text-slate-200 uppercase tracking-widest mb-1">{k.replace(/_/g, ' ')}</p>
                                       <p className="text-sm font-black text-white tracking-tighter">{displayValue}</p>
                                     </div>
                                   );
@@ -791,7 +791,7 @@ export default function ComplianceDashboard() {
                             {/* SHAP Values Contextualized */}
                             <div>
                               <div className="flex items-center justify-between mb-6">
-                                <h5 className="text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                                <h5 className="text-[10px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
                                    <Zap size={12} className="text-amber-500" /> Contribution Logic
                                 </h5>
                                 <Badge variant="info">Forensic Contextualization</Badge>
@@ -816,7 +816,7 @@ export default function ComplianceDashboard() {
                                     const relativeSize = (magnitude / maxAbsShap) * 100;
                                     
                                     const impact = magnitude > 0.5 ? 'High Impact' : magnitude > 0.2 ? 'Medium' : 'Low';
-                                    const impactColor = magnitude > 0.5 ? 'bg-rose-500/10 text-rose-500' : magnitude > 0.2 ? 'bg-amber-500/10 text-amber-500' : 'bg-slate-500/10 text-slate-500';
+                                    const impactColor = magnitude > 0.5 ? 'bg-rose-500/10 text-rose-500' : magnitude > 0.2 ? 'bg-amber-500/10 text-amber-500' : 'bg-slate-500/10 text-slate-200';
                                     
                                     const rank = index + 1;
                                     const suffix = rank === 1 ? 'st' : rank === 2 ? 'nd' : rank === 3 ? 'rd' : 'th';
@@ -845,12 +845,12 @@ export default function ComplianceDashboard() {
                                                 {impact}
                                               </span>
                                             </div>
-                                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                                            <p className="text-[9px] font-bold text-slate-200 uppercase tracking-widest">
                                               Input Value: <span className="text-amber-500 font-black">{displayInput}</span>
                                             </p>
                                           </div>
                                           <div className="text-right">
-                                            <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">{rankLabel}</p>
+                                            <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1">{rankLabel}</p>
                                             <p className={`text-xs font-black ${directionColor} tracking-tighter`}>
                                               {v > 0 ? '+' : ''}{v.toFixed(4)}
                                             </p>
@@ -899,14 +899,14 @@ export default function ComplianceDashboard() {
                           >
                             {/* Preprocessing Vector */}
                             <section className="space-y-6">
-                              <h5 className="text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                              <h5 className="text-[10px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
                                  <Cpu size={12} className="text-amber-500" /> Preprocessed Feature Vector
                               </h5>
                               <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5">
                                 <div className="flex flex-wrap gap-2">
                                   {Object.entries(selectedApp.input_data).map(([k, v]: any) => (
                                     <div key={k} className="px-3 py-2 bg-white/5 border border-white/5 rounded-xl flex items-center gap-3">
-                                      <span className="text-[7px] font-black text-slate-600 uppercase">{k.replace(/_/g, ' ')}</span>
+                                      <span className="text-[7px] font-black text-slate-300 uppercase">{k.replace(/_/g, ' ')}</span>
                                       <span className="text-[10px] font-mono text-amber-500 font-bold">{typeof v === 'number' ? v.toFixed(2) : v}</span>
                                     </div>
                                   ))}
@@ -916,7 +916,7 @@ export default function ComplianceDashboard() {
 
                             {/* XGBoost Leaf Analysis */}
                             <section className="space-y-6">
-                               <h5 className="text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                               <h5 className="text-[10px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
                                  <Binary size={12} className="text-amber-500" /> XGBoost Tree Ensemble (Top 5)
                                </h5>
                                <div className="space-y-3">
@@ -939,7 +939,7 @@ export default function ComplianceDashboard() {
 
                             {/* Probability Mapping */}
                             <section className="space-y-6">
-                               <h5 className="text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                               <h5 className="text-[10px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
                                  <Layers size={12} className="text-amber-500" /> Sigmoid Probability Mapping
                                </h5>
                                <div className="p-8 bg-black/40 rounded-[2.5rem] border border-white/5 space-y-8 relative overflow-hidden">
@@ -954,11 +954,11 @@ export default function ComplianceDashboard() {
                                      <div className="space-y-8 relative z-10">
                                        <div className="grid grid-cols-2 gap-8">
                                          <div>
-                                           <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">Cumulative Log-Odds (Σ)</p>
+                                           <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1">Cumulative Log-Odds (Σ)</p>
                                            <p className="text-3xl font-black text-white tracking-tighter">{logOdds.toFixed(4)}</p>
                                          </div>
                                          <div className="text-right">
-                                           <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">Decision Threshold (τ)</p>
+                                           <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1">Decision Threshold (τ)</p>
                                            <p className="text-3xl font-black text-amber-500 tracking-tighter">0.50</p>
                                          </div>
                                        </div>
@@ -1022,8 +1022,8 @@ export default function ComplianceDashboard() {
                         <h5 className="text-sm font-black text-white uppercase tracking-tight">Order #{req.id}: {req.attribute.toUpperCase()} Correction</h5>
                         <Badge variant={req.status === 'pending' ? 'warning' : 'success'}>{req.status.toUpperCase()}</Badge>
                       </div>
-                      <p className="text-[10px] text-slate-500 font-bold mt-1 leading-relaxed max-w-xl">{req.description}</p>
-                      <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-2">Lodged: {new Date(req.lodged_at).toLocaleString()}</p>
+                      <p className="text-[10px] text-slate-200 font-bold mt-1 leading-relaxed max-w-xl">{req.description}</p>
+                      <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mt-2">Lodged: {new Date(req.lodged_at).toLocaleString()}</p>
                     </div>
                   </div>
                   <div className="flex gap-3">
@@ -1050,7 +1050,7 @@ export default function ComplianceDashboard() {
                     {(req.status === 'applied' || req.status === 'approved') && (
                       <div className="text-right">
                         <p className="text-[10px] font-black text-emerald-500 uppercase">Status: {req.status}</p>
-                        <p className="text-[8px] text-slate-600 uppercase font-bold">{req.resolved_at ? new Date(req.resolved_at).toLocaleDateString() : 'Active'}</p>
+                        <p className="text-[8px] text-slate-300 uppercase font-bold">{req.resolved_at ? new Date(req.resolved_at).toLocaleDateString() : 'Active'}</p>
                       </div>
                     )}
                   </div>
@@ -1059,7 +1059,7 @@ export default function ComplianceDashboard() {
             ) : (
               <div className="p-12 text-center bg-white/[0.01] rounded-3xl border border-dashed border-white/5">
                 <ShieldCheck size={40} className="mx-auto text-slate-700 mb-4" />
-                <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">No pending regulatory orders detected</p>
+                <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">No pending regulatory orders detected</p>
               </div>
             )}
           </div>
@@ -1100,24 +1100,24 @@ export default function ComplianceDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {/* Cryptographic Breakdown */}
                   <div className="space-y-6">
-                    <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                    <h5 className="text-[10px] font-black text-slate-200 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
                       <Hash size={12} className="text-amber-500" /> Evidence Logs
                     </h5>
                     
                     <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5 space-y-4">
                       <div>
-                        <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">Record Reference</p>
+                        <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1">Record Reference</p>
                         <p className="text-sm font-black text-white font-mono uppercase tracking-tighter">
                           {verifyStatus.compromised_records?.[0]?.application_id || verifyStatus.application_id}
                         </p>
                       </div>
                       
                       <div className="pt-4 border-t border-white/5">
-                        <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-2">Hash Mismatch</p>
+                        <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-2">Hash Mismatch</p>
                         <div className="space-y-2">
                           <div className="p-3 bg-white/5 rounded-xl border border-white/5">
                             <div className="flex justify-between items-center mb-1">
-                              <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest">Expected (Stored Chain)</span>
+                              <span className="text-[7px] font-black text-slate-200 uppercase tracking-widest">Expected (Stored Chain)</span>
                               <Badge variant="success" className="text-[6px] py-0">MATCH FAIL</Badge>
                             </div>
                             <p className="text-[10px] font-mono text-white/40 break-all leading-relaxed">{verifyStatus.stored_hash}</p>
@@ -1134,11 +1134,11 @@ export default function ComplianceDashboard() {
 
                       <div className="pt-4 border-t border-white/5 flex items-center justify-between">
                          <div>
-                           <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">Modified At (Suspected)</p>
+                           <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1">Modified At (Suspected)</p>
                            <p className="text-xs font-black text-white uppercase">{new Date(verifyStatus.timestamp).toLocaleString()}</p>
                          </div>
                          <div className="text-right">
-                           <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">Risk Severity</p>
+                           <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1">Risk Severity</p>
                            <Badge variant="error" className="animate-pulse">CRITICAL</Badge>
                          </div>
                       </div>
@@ -1158,14 +1158,14 @@ export default function ComplianceDashboard() {
 
                   {/* AI Suggested Steps */}
                   <div className="space-y-6">
-                    <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                    <h5 className="text-[10px] font-black text-slate-200 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
                       <Zap size={12} className="text-amber-500" /> Neural Remediation Path
                     </h5>
 
                     {isAnalyzing ? (
                       <div className="p-12 flex flex-col items-center justify-center bg-white/[0.02] rounded-3xl border border-white/5 border-dashed">
                         <RefreshCw size={32} className="text-amber-500 animate-spin mb-4" />
-                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] animate-pulse">Gemini-Forensic Scanning...</p>
+                        <p className="text-[9px] font-black text-slate-200 uppercase tracking-[0.3em] animate-pulse">Gemini-Forensic Scanning...</p>
                       </div>
                     ) : (
                       <div className="space-y-4">
@@ -1197,7 +1197,7 @@ export default function ComplianceDashboard() {
                                  <RefreshCw size={60} />
                                </div>
                                <h6 className="text-[10px] font-black text-white uppercase tracking-widest mb-1">Restore from Chain</h6>
-                               <p className="text-[9px] font-bold text-slate-600 uppercase leading-relaxed max-w-[200px]">Roll back database record to the last known cryptographically signed state.</p>
+                               <p className="text-[9px] font-bold text-slate-300 uppercase leading-relaxed max-w-[200px]">Roll back database record to the last known cryptographically signed state.</p>
                             </div>
                       </div>
                     )}
@@ -1207,7 +1207,7 @@ export default function ComplianceDashboard() {
 
               {/* Modal Footer */}
               <div className="p-8 border-t border-white/5 bg-white/[0.02] flex justify-between items-center">
-                 <div className="flex items-center gap-4 text-slate-500">
+                 <div className="flex items-center gap-4 text-slate-200">
                    <SearchCode size={20} />
                    <div>
                      <p className="text-[10px] font-black uppercase tracking-tight">AI Forensic Signature</p>
@@ -1255,7 +1255,7 @@ export default function ComplianceDashboard() {
                   </div>
                   <div>
                     <h3 className="text-2xl font-black text-white uppercase tracking-tighter">System Status Log</h3>
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">Live Node Diagnostics</p>
+                    <p className="text-[10px] font-black text-slate-200 uppercase tracking-widest mt-1">Live Node Diagnostics</p>
                   </div>
                 </div>
                 <button onClick={() => setShowSystemLog(false)} className="p-4 hover:bg-white/5 rounded-2xl text-white/40 hover:text-white transition-all">
@@ -1268,7 +1268,7 @@ export default function ComplianceDashboard() {
                   <>
                     <div className="grid grid-cols-2 gap-4">
                        <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5">
-                          <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-2">Throughput (Today)</p>
+                          <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-2">Throughput (Today)</p>
                           <div className="flex items-end gap-3">
                             <span className="text-3xl font-black text-white tracking-tighter">{systemStatus.today_count}</span>
                             <span className={`text-[10px] font-black mb-1.5 ${systemStatus.today_count >= systemStatus.yesterday_count ? 'text-emerald-500' : 'text-rose-500'}`}>
@@ -1278,7 +1278,7 @@ export default function ComplianceDashboard() {
                           </div>
                        </div>
                        <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5">
-                          <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-2">Anomalies Detected</p>
+                          <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-2">Anomalies Detected</p>
                           <div className="flex items-end gap-3">
                             <span className="text-3xl font-black text-white tracking-tighter">{systemStatus.total_anomalies}</span>
                             <Badge variant={systemStatus.total_anomalies > 0 ? "error" : "success"} className="mb-1.5">
@@ -1289,12 +1289,12 @@ export default function ComplianceDashboard() {
                     </div>
 
                     <div className="space-y-4">
-                      <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                      <h5 className="text-[10px] font-black text-slate-200 uppercase tracking-[0.2em] flex items-center gap-2">
                         <Activity size={12} className="text-amber-500" /> Infrastructure Pulse
                       </h5>
                       <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl space-y-4">
                          <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight">
-                            <span className="text-slate-600">Model Weights Last Trained</span>
+                            <span className="text-slate-300">Model Weights Last Trained</span>
                             <span className="text-white">{new Date(systemStatus.model_trained_at).toLocaleString()}</span>
                          </div>
                          <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight">

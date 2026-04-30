@@ -118,7 +118,7 @@ export default function RegulatorDashboard() {
   if (loading) return (
     <div className="h-[80vh] flex flex-col items-center justify-center space-y-6">
       <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin shadow-2xl shadow-amber-500/20"></div>
-      <p className="text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">Synchronizing Regulatory Node...</p>
+      <p className="text-slate-200 font-black uppercase tracking-[0.4em] text-[10px]">Synchronizing Regulatory Node...</p>
     </div>
   );
 
@@ -131,14 +131,14 @@ export default function RegulatorDashboard() {
           </div>
           <div>
             <h1 className="text-4xl font-black text-white tracking-tighter uppercase">National <span className="text-amber-500 italic">Oversight</span> Hub</h1>
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-1">Institutional Equity & Forensic Audit Interface</p>
+            <p className="text-[10px] font-black text-slate-200 uppercase tracking-[0.4em] mt-1">Institutional Equity & Forensic Audit Interface</p>
           </div>
         </div>
 
         {/* Top-Level Forensic Color Key */}
         <div className="flex items-center gap-6 p-4 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-md">
            <div className="hidden lg:block border-r border-white/10 pr-6 mr-2">
-             <span className="text-[8px] font-black text-slate-600 uppercase tracking-[0.2em]">Color Identity Index</span>
+             <span className="text-[8px] font-black text-slate-300 uppercase tracking-[0.2em]">Color Identity Index</span>
            </div>
            {[
              { color: "bg-[#fbbf24]", label: "MAJORITY BENCHMARK", desc: "Reference Standard (Gold)" },
@@ -148,7 +148,7 @@ export default function RegulatorDashboard() {
                 <div className={`w-3 h-3 rounded-full ${c.color} shadow-[0_0_15px_rgba(255,255,255,0.1)] animate-pulse`} />
                 <div>
                   <p className="text-[10px] font-black text-white tracking-tighter uppercase">{c.label}</p>
-                  <p className="text-[7px] font-bold text-slate-500 uppercase tracking-widest">{c.desc}</p>
+                  <p className="text-[7px] font-bold text-slate-200 uppercase tracking-widest">{c.desc}</p>
                 </div>
              </div>
            ))}
@@ -188,10 +188,10 @@ export default function RegulatorDashboard() {
                 <m.icon size={24} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{m.label}</p>
+                <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{m.label}</p>
                 <p className="text-3xl font-black text-white tracking-tighter">{m.value}</p>
                 {m.label === "Model Integrity" && (
-                  <p className="text-[7px] font-bold text-slate-500 uppercase mt-1">Weighted Health Score (0-10)</p>
+                  <p className="text-[7px] font-bold text-slate-200 uppercase mt-1">Weighted Health Score (0-10)</p>
                 )}
               </div>
             </div>
@@ -211,7 +211,7 @@ export default function RegulatorDashboard() {
                   <button
                     key={dim}
                     onClick={() => setDimension(dim)}
-                    className={`px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${dimension === dim ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20' : 'text-slate-500 hover:text-white'}`}
+                    className={`px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${dimension === dim ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20' : 'text-slate-200 hover:text-white'}`}
                   >
                     {dim}
                   </button>
@@ -242,22 +242,22 @@ export default function RegulatorDashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
                   <XAxis 
                     dataKey="group" 
-                    stroke="#475569" 
-                    fontSize={12} 
-                    height={60}
+                    stroke="#94a3b8" 
+                    fontSize={14} 
+                    height={80}
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fill: '#94a3b8', fontWeight: 900 }} 
-                    label={{ value: 'PROTECTED ATTRIBUTE GROUPS', position: 'insideBottom', offset: 0, fontSize: 9, fill: '#475569', fontWeight: 900 }}
+                    tick={{ fill: '#f8fafc', fontWeight: 900 }} 
+                    label={{ value: 'PROTECTED ATTRIBUTE GROUPS', position: 'insideBottom', offset: 10, fontSize: 12, fill: '#cbd5e1', fontWeight: 900 }}
                   />
                   <YAxis 
-                    stroke="#475569" 
-                    fontSize={10} 
+                    stroke="#94a3b8" 
+                    fontSize={12} 
                     axisLine={false} 
                     tickLine={false} 
                     domain={[0, 100]} 
                     tickFormatter={(v) => `${v}%`}
-                    label={{ value: 'APPROVAL PROBABILITY', angle: -90, position: 'insideLeft', offset: 0, fontSize: 8, fill: '#475569', fontWeight: 900 }}
+                    label={{ value: 'APPROVAL PROBABILITY', angle: -90, position: 'insideLeft', offset: 0, fontSize: 11, fill: '#cbd5e1', fontWeight: 900 }}
                   />
                   <Tooltip 
                     cursor={{ fill: 'rgba(255,255,255,0.02)' }}
@@ -315,11 +315,11 @@ export default function RegulatorDashboard() {
                     </Badge>
                   </div>
                   <div>
-                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{m.label}</p>
+                    <p className="text-[9px] font-black text-slate-200 uppercase tracking-widest">{m.label}</p>
                     <p className="text-2xl font-black text-white tracking-tighter mt-1">{formatPercent(m.value || 0)}</p>
-                    <p className="text-[8px] font-mono text-slate-600 mt-2 bg-black/40 p-1.5 rounded-lg border border-white/5 truncate">{m.formula}</p>
+                    <p className="text-[8px] font-mono text-slate-300 mt-2 bg-black/40 p-1.5 rounded-lg border border-white/5 truncate">{m.formula}</p>
                   </div>
-                  <p className="text-[9px] font-bold text-slate-500 mt-3 leading-relaxed opacity-60 group-hover:opacity-100 transition-opacity">{m.desc}</p>
+                  <p className="text-[9px] font-bold text-slate-200 mt-3 leading-relaxed opacity-60 group-hover:opacity-100 transition-opacity">{m.desc}</p>
                 </div>
               ))}
             </div>
@@ -328,7 +328,7 @@ export default function RegulatorDashboard() {
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h4 className="text-sm font-black text-white uppercase tracking-tighter">Equity Gap Velocity</h4>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Rolling 7-day demographic parity trend</p>
+                  <p className="text-[10px] font-bold text-slate-200 uppercase tracking-widest mt-1">Rolling 7-day demographic parity trend</p>
                 </div>
                 <Badge variant={fairnessTrend.length > 1 && fairnessTrend[fairnessTrend.length-1].gap > fairnessTrend[0].gap ? 'error' : 'success'} className="text-[7px]">
                   {fairnessTrend.length > 1 && fairnessTrend[fairnessTrend.length-1].gap > fairnessTrend[0].gap ? 'WORSENING' : 'IMPROVING'}
@@ -346,21 +346,21 @@ export default function RegulatorDashboard() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
                     <XAxis 
                       dataKey="date" 
-                      stroke="#475569" 
-                      fontSize={10} 
-                      height={50}
+                      stroke="#94a3b8" 
+                      fontSize={12} 
+                      height={60}
                       axisLine={false} 
                       tickLine={false} 
                       tickFormatter={(val) => val.split('-').slice(1).join('/')}
-                      label={{ value: 'AUDIT TIMELINE (DD/MM)', position: 'insideBottom', offset: 5, fontSize: 8, fill: '#475569', fontWeight: 900 }}
+                      label={{ value: 'AUDIT TIMELINE (DD/MM)', position: 'insideBottom', offset: 15, fontSize: 11, fill: '#cbd5e1', fontWeight: 900 }}
                     />
                     <YAxis 
-                      stroke="#475569" 
-                      fontSize={8} 
+                      stroke="#94a3b8" 
+                      fontSize={10} 
                       axisLine={false} 
                       tickLine={false} 
                       tickFormatter={(val) => `${(val * 100).toFixed(0)}%`} 
-                      label={{ value: 'EQUITY GAP (%)', angle: -90, position: 'insideLeft', offset: 10, fontSize: 8, fill: '#475569', fontWeight: 900 }}
+                      label={{ value: 'EQUITY GAP (%)', angle: -90, position: 'insideLeft', offset: 15, fontSize: 11, fill: '#cbd5e1', fontWeight: 900 }}
                     />
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
@@ -389,7 +389,7 @@ export default function RegulatorDashboard() {
           <Card title="Model Integrity" className="h-full">
             <div className="space-y-8">
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Risk Variance</span>
+                <span className="text-[10px] font-black text-slate-200 uppercase tracking-widest">Risk Variance</span>
                 <Badge variant={drift?.drift_detected ? "error" : "warning"}>{drift?.drift_detected ? "CRITICAL" : "MONITORING"}</Badge>
               </div>
               <div className="flex items-end gap-2">
@@ -399,7 +399,7 @@ export default function RegulatorDashboard() {
                      {drift?.details?.approval_delta > 0 ? <ArrowUpRight size={10} /> : <TrendingUp size={10} className="rotate-180" />}
                      {formatPercent(Math.abs(drift?.details?.approval_delta || 0))} Delta
                    </span>
-                   <span className="text-[7px] text-slate-600 font-bold uppercase tracking-widest leading-none">Vs Baseline</span>
+                   <span className="text-[7px] text-slate-300 font-bold uppercase tracking-widest leading-none">Vs Baseline</span>
                  </div>
               </div>
               <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
@@ -413,14 +413,14 @@ export default function RegulatorDashboard() {
                    { label: "Avg Risk Score", value: formatRatio(summary?.average_risk_score || 0), color: "text-amber-400" }
                  ].map((stat, i) => (
                     <div key={i} className="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5">
-                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{stat.label}</span>
+                      <span className="text-[10px] font-black text-slate-200 uppercase tracking-widest">{stat.label}</span>
                       <span className={`text-sm font-black tracking-tight ${stat.color}`}>{stat.value}</span>
                     </div>
                  ))}
               </div>
               
               <div className="space-y-3">
-                 <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1 px-1">Feature Stability Index (PSI)</p>
+                 <p className="text-[9px] font-black text-slate-200 uppercase tracking-widest mb-1 px-1">Feature Stability Index (PSI)</p>
                  <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
                     {drift?.details?.feature_psi && Object.entries(drift.details.feature_psi).map(([feature, psi]: any) => (
                       <div key={feature} className="flex items-center justify-between p-3 bg-white/[0.02] rounded-xl border border-white/5">
@@ -445,7 +445,7 @@ export default function RegulatorDashboard() {
                   {drift?.recommended_action}
                 </p>
                 <div className="pt-2 border-t border-amber-500/10 mt-1">
-                  <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">First Detected</p>
+                  <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">First Detected</p>
                   <p className="text-[9px] font-black text-slate-400 uppercase mt-0.5">
                     {drift?.detected_at ? new Date(drift.detected_at).toLocaleString() : 'N/A'}
                   </p>
@@ -476,7 +476,7 @@ export default function RegulatorDashboard() {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 border-b border-white/5">
+              <tr className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 border-b border-white/5">
                 <th className="px-8 py-5">Protected Attribute</th>
                 <th className="px-8 py-5">Highest Approval Group</th>
                 <th className="px-8 py-5">Lowest Approval Group</th>
@@ -506,7 +506,7 @@ export default function RegulatorDashboard() {
                     <span className={`text-sm font-black tracking-tighter ${item.ratio >= 0.8 ? 'text-emerald-500' : 'text-rose-500'}`}>
                       {(item.ratio * 100).toFixed(1)}%
                     </span>
-                    <p className="text-[8px] text-slate-600 font-black uppercase tracking-widest mt-1">Vs Benchmark</p>
+                    <p className="text-[8px] text-slate-300 font-black uppercase tracking-widest mt-1">Vs Benchmark</p>
                   </td>
                   <td className="px-8 py-6 text-right">
                     <Badge variant={item.status === 'PASS' ? 'success' : 'error'}>
@@ -546,7 +546,7 @@ export default function RegulatorDashboard() {
                   <ShieldCheck size={40} className="text-emerald-500" />
                   <div>
                     <h5 className="text-xs font-black text-white uppercase tracking-tight">Full Compliance</h5>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">No active remediation required.</p>
+                    <p className="text-[10px] text-slate-200 font-bold uppercase tracking-widest mt-1">No active remediation required.</p>
                   </div>
                 </div>
               )}
@@ -573,7 +573,7 @@ export default function RegulatorDashboard() {
               <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
                 <div>
                   <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Forensic <span className="text-amber-500 italic">Audit</span> Ledger</h3>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Full Immutable Traceability Chain // Cross-Node Verification</p>
+                  <p className="text-[10px] font-bold text-slate-200 uppercase tracking-widest mt-1">Full Immutable Traceability Chain // Cross-Node Verification</p>
                 </div>
                 <button onClick={() => setIsLogsOpen(false)} className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl text-slate-400 hover:text-white transition-all">
                   <CloseIcon size={20} />
@@ -583,7 +583,7 @@ export default function RegulatorDashboard() {
               <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
                 <table className="w-full text-left border-separate border-spacing-y-3">
                   <thead>
-                    <tr className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                    <tr className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
                       <th className="px-6 py-4">Node ID</th>
                       <th className="px-6 py-4">Decision</th>
                       <th className="px-6 py-4">Risk Probability</th>
@@ -596,7 +596,7 @@ export default function RegulatorDashboard() {
                       <tr key={log.id} className="group hover:bg-white/[0.02] transition-colors">
                         <td className="px-6 py-5 bg-white/[0.03] rounded-l-2xl border-l border-y border-white/5">
                           <p className="text-xs font-black text-white tracking-tight font-mono">{log.application_id}</p>
-                          <p className="text-[9px] text-slate-500 mt-1 uppercase font-bold">{new Date(log.timestamp).toLocaleString()}</p>
+                          <p className="text-[9px] text-slate-200 mt-1 uppercase font-bold">{new Date(log.timestamp).toLocaleString()}</p>
                         </td>
                         <td className="px-6 py-5 bg-white/[0.03] border-y border-white/5">
                           <Badge variant={log.decision === 'approve' ? 'success' : 'error'} className="text-[9px] tracking-widest">
@@ -624,7 +624,7 @@ export default function RegulatorDashboard() {
               </div>
 
               <div className="p-8 border-t border-white/5 bg-white/[0.01] flex justify-between items-center">
-                 <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Displaying last {logs.length} high-integrity records</p>
+                 <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Displaying last {logs.length} high-integrity records</p>
                  <div className="flex items-center gap-3">
                     <ShieldCheck size={14} className="text-emerald-500" />
                     <span className="text-[9px] font-black text-emerald-500 uppercase tracking-[0.2em]">All Hashes Verified</span>

@@ -296,7 +296,7 @@ export default function ApplicantDashboard() {
             <Zap size={20} className="animate-pulse" />
           </div>
           <div className="pr-1">
-            <p className="text-[9px] uppercase font-black text-slate-500 tracking-[0.2em] mb-0.5">Engine Status</p>
+            <p className="text-[9px] uppercase font-black text-slate-200 tracking-[0.2em] mb-0.5">Engine Status</p>
             <p className="text-xs font-black text-white uppercase tracking-tight flex items-center gap-2">
               High Integrity
               <ShieldCheck size={12} className="text-emerald-500" />
@@ -428,7 +428,7 @@ export default function ApplicantDashboard() {
           {/* History Section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between px-2">
-              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] flex items-center gap-2">
+              <h3 className="text-[10px] font-black text-slate-200 uppercase tracking-[0.3em] flex items-center gap-2">
                 <HistoryIcon size={12} />
                 Audit History
               </h3>
@@ -438,7 +438,7 @@ export default function ApplicantDashboard() {
             <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-white/10">
               {history.length === 0 ? (
                 <div className="text-center py-6 bg-white/[0.02] border border-white/5 rounded-2xl">
-                  <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest">No Records</p>
+                  <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest">No Records</p>
                 </div>
               ) : (
                 history.map((item, i) => (
@@ -458,9 +458,9 @@ export default function ApplicantDashboard() {
                         <div>
                           <p className="text-[10px] font-black text-white uppercase tracking-tight truncate max-w-[120px]">{item.bank_name || 'Generic Engine'}</p>
                           <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="text-[8px] font-bold text-slate-500 uppercase">{formatCurrency(item.input_data.loan_amount)}</span>
+                            <span className="text-[8px] font-bold text-slate-200 uppercase">{formatCurrency(item.input_data.loan_amount)}</span>
                             <span className="text-[8px] text-slate-700">•</span>
-                            <span className="text-[8px] font-bold text-slate-500 uppercase">{new Date(item.timestamp).toLocaleDateString()}</span>
+                            <span className="text-[8px] font-bold text-slate-200 uppercase">{new Date(item.timestamp).toLocaleDateString()}</span>
                           </div>
                         </div>
                       </div>
@@ -483,7 +483,7 @@ export default function ApplicantDashboard() {
                         >
                           <div className="p-4 mt-3 bg-white/[0.03] rounded-2xl border border-white/5 space-y-4">
                             <div>
-                               <p className="text-[7px] font-black text-slate-600 uppercase tracking-widest mb-2">Key Decision Drivers</p>
+                               <p className="text-[7px] font-black text-slate-300 uppercase tracking-widest mb-2">Key Decision Drivers</p>
                                <div className="flex flex-wrap gap-1.5">
                                  {item.top_factors?.slice(0, 3).map((f: string) => (
                                    <div key={f} className="px-2 py-1 bg-white/5 border border-white/5 rounded-md text-[7px] font-bold text-slate-400 uppercase">
@@ -577,10 +577,10 @@ export default function ApplicantDashboard() {
               >
                 <div className="w-16 h-16 bg-white/5 rounded-2xl shadow-xl flex items-center justify-center mb-6 border border-white/5 relative overflow-hidden group">
                   <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <Fingerprint className="text-slate-600 w-8 h-8 relative z-10" />
+                  <Fingerprint className="text-slate-300 w-8 h-8 relative z-10" />
                 </div>
                 <h3 className="text-white font-black text-xl tracking-tighter uppercase leading-none">Awaiting Submission</h3>
-                <p className="text-slate-500 text-[9px] font-black uppercase tracking-[0.3em] mt-4 max-w-xs leading-relaxed">
+                <p className="text-slate-200 text-[9px] font-black uppercase tracking-[0.3em] mt-4 max-w-xs leading-relaxed">
                   Initialize payload for real-time risk assessment.
                 </p>
               </motion.div>
@@ -669,11 +669,11 @@ export default function ApplicantDashboard() {
                           >
                             {result.probability > 0.6 ? 'HIGH RISK' : result.probability > 0.3 ? 'MODERATE RISK' : 'LOW RISK'}
                           </Badge>
-                          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pt-3">
+                          <p className="text-[10px] font-bold text-slate-200 uppercase tracking-widest pt-3">
                             Neural Probability Score
                           </p>
                           <div className="pt-4 border-t border-white/5 mt-4">
-                             <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest leading-none">
+                             <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest leading-none">
                                Institutional Benchmark
                              </p>
                              <p className="text-[10px] font-black text-amber-500/80 mt-1 uppercase">
@@ -751,7 +751,7 @@ export default function ApplicantDashboard() {
                                       <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
                                         Your <span className="text-white font-black">{FEATURE_NAMES[factor]}</span> of <span className="text-amber-500 font-black">{formattedInput}</span> contributed <span className={`font-black ${directionColor}`}>+{magnitude.toFixed(2)}</span> toward {val < 0 ? 'approval' : 'rejection'}.
                                       </p>
-                                      <p className="text-[8px] text-slate-500 italic font-bold uppercase tracking-widest flex items-center gap-2">
+                                      <p className="text-[8px] text-slate-200 italic font-bold uppercase tracking-widest flex items-center gap-2">
                                         <span className="w-1 h-1 bg-amber-500/40 rounded-full" />
                                         {qualifier}
                                       </p>
@@ -771,11 +771,11 @@ export default function ApplicantDashboard() {
                                 <div className="flex gap-4">
                                   <div className="flex items-center gap-1.5">
                                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                    <span className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Actionable</span>
+                                    <span className="text-[8px] font-bold text-slate-200 uppercase tracking-tighter">Actionable</span>
                                   </div>
                                   <div className="flex items-center gap-1.5">
                                     <div className="w-1.5 h-1.5 rounded-full bg-slate-600" />
-                                    <span className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Fixed</span>
+                                    <span className="text-[8px] font-bold text-slate-200 uppercase tracking-tighter">Fixed</span>
                                   </div>
                                 </div>
                               </div>
@@ -847,7 +847,7 @@ export default function ApplicantDashboard() {
                       <div>
                         <div className="flex items-center gap-2 mb-6">
                            <Zap size={16} className="text-amber-500" />
-                           <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Neural Strategy Simulator</h5>
+                           <h5 className="text-[10px] font-black text-slate-200 uppercase tracking-widest">Neural Strategy Simulator</h5>
                         </div>
 
                         {(() => {
@@ -874,7 +874,7 @@ export default function ApplicantDashboard() {
                                     <h4 className="text-4xl font-black text-white tracking-tighter">{formatPercent(simProb)}</h4>
                                   </div>
                                   <div className="text-right">
-                                    <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Delta vs Original</p>
+                                    <p className="text-[8px] font-black text-slate-200 uppercase tracking-widest mb-1">Delta vs Original</p>
                                     <p className={`text-sm font-black ${simProb < result.probability ? 'text-emerald-500' : 'text-rose-500'}`}>
                                       {simProb < result.probability ? '-' : '+'}{formatPercent(Math.abs(simProb - result.probability))}
                                     </p>
@@ -896,7 +896,7 @@ export default function ApplicantDashboard() {
                                   { label: "Credit Score", key: "credit_score", min: 300, max: 850, step: 1, isPercent: false }
                                 ].map((cfg) => (
                                   <div key={cfg.key} className="space-y-3">
-                                    <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-500">
+                                    <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-200">
                                       <span>{cfg.label}</span>
                                       <span className="text-white">{cfg.isCurrency ? formatCurrency(simValues[cfg.key]) : cfg.isPercent ? formatRatio(simValues[cfg.key]) : simValues[cfg.key]}</span>
                                     </div>
@@ -920,7 +920,7 @@ export default function ApplicantDashboard() {
                       <div className="space-y-4 pt-8 border-t border-white/5">
                         <div className="flex items-center gap-2 mb-4">
                            <Activity size={16} className="text-indigo-400" />
-                           <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Model Actionability Path</h5>
+                           <h5 className="text-[10px] font-black text-slate-200 uppercase tracking-widest">Model Actionability Path</h5>
                         </div>
                         <ul className="space-y-3">
                           {result.suggestions.map((s: string, i: number) => (
