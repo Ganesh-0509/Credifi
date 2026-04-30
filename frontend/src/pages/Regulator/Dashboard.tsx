@@ -137,17 +137,18 @@ export default function RegulatorDashboard() {
 
         {/* Top-Level Forensic Color Key */}
         <div className="flex items-center gap-6 p-4 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-md">
-           <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest mr-2">Chart Legend:</span>
+           <div className="hidden lg:block border-r border-white/10 pr-6 mr-2">
+             <span className="text-[8px] font-black text-slate-600 uppercase tracking-[0.2em]">Color Identity Index</span>
+           </div>
            {[
-             { color: "bg-[#fbbf24]", label: "MAJORITY BENCHMARK", desc: "Reference Group" },
-             { color: "bg-[#10b981]", label: "PROTECTED GROUP", desc: "Target Population" },
-             { color: "bg-amber-600", label: "EQUITY GAP", desc: "Parity Variance" }
+             { color: "bg-[#fbbf24]", label: "MAJORITY BENCHMARK", desc: "Reference Standard (Gold)" },
+             { color: "bg-[#10b981]", label: "PROTECTED POPULATION", desc: "Monitored Groups (Emerald)" }
            ].map((c, i) => (
              <div key={i} className="flex items-center gap-3 pr-6 border-r border-white/5 last:border-none">
-                <div className={`w-2.5 h-2.5 rounded-full ${c.color} shadow-[0_0_8px_rgba(255,255,255,0.1)]`} />
+                <div className={`w-3 h-3 rounded-full ${c.color} shadow-[0_0_15px_rgba(255,255,255,0.1)] animate-pulse`} />
                 <div>
-                  <p className="text-[9px] font-black text-white tracking-tighter">{c.label}</p>
-                  <p className="text-[7px] font-bold text-slate-600 uppercase">{c.desc}</p>
+                  <p className="text-[10px] font-black text-white tracking-tighter uppercase">{c.label}</p>
+                  <p className="text-[7px] font-bold text-slate-500 uppercase tracking-widest">{c.desc}</p>
                 </div>
              </div>
            ))}
