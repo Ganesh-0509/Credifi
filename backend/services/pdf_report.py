@@ -141,3 +141,83 @@ def generate_regulator_pdf(fairness_data, summary_data, drift_data, compliance_s
     doc.build(elements)
     buffer.seek(0)
     return buffer
+
+def generate_individual_report_pdf(record: dict):
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
+    styles = getSampleStyleSheet()
+    
+    # Custom styles
+    title_style = ParagraphStyle(
+        'TitleStyle',
+        parent=styles['Heading1'],
+        fontSize=24,
+        textColor=colors.hexColor('#f59e0b'),
+        alignment=1,
+        spaceAfter=30
+    )
+    
+    header_style = ParagraphStyle(
+        'HeaderStyle',
+        parent=styles['Heading2'],
+        fontSize=16,
+        textColor=colors.black,
+        spaceBefore=20,
+        spaceAfter=12
+    )
+
+    elements = []
+
+    # --- Cover ---
+    elements.append(Spacer(1, 1*inch))
+    elements.append(Paragraph("Personal Credit Audit Report", title_style))
+    elements.append(Paragraph(f"Application ID: {record.get('application_id')}", styles['Normal']))
+    elements.append(Paragraph(f"Institution: {record.get('bank_name', 'Global Trust Bank')}", styles['Normal']))
+    elements.append(Paragraph(f"Date: {datetime.now().strftime('%Y-%m-%d')}", styles['Normal']))
+    elements.append(Spacer(1, 24))
+
+    # --- Decision ---
+    elements.append(Paragraph("1. Forensic Decision Summary", header_style))
+    decision_color = colors.hexColor('#10b981') if record.get('decision') == 'approve' else colors.hexColor('#f43f5e')
+    elements.append(Paragraph(f"Result: <font color={decision_color}><b>{record.get('decision', 'N/A').upper()}</b></font>", styles['Normal']))
+    elements.append(Paragraph(f"Neural Risk Score: {record.get('probability', 0)*100:.2f}%", styles['Normal']))
+    elements.append(Spacer(1, 12))
+
+    # --- AI Analysis ---
+    if record.get('ai_narrative'):
+        elements.append(Paragraph("2. AI Forensic Narrative", header_style))
+        elements.append(Paragraph(record.get('ai_narrative'), styles['Normal']))
+        elements.append(Spacer(1, 12))
+
+    # --- Factors Table ---
+    elements.append(Paragraph("3. Decision Attribution (SHAP)", header_style))
+    factors = []
+    shap_vals = record.get('shap_values', {})
+    for f, v in shap_vals.items():
+        direction = 'FAVORABLE' if v < 0 else 'UNFAVORABLE'
+        factors.append([f.replace('_', ' ').upper(), f"{v:.4f}", direction])
+    
+    ft = Table([['Feature', 'Impact', 'Direction']] + factors, colWidths=[2.5*inch, 1.5*inch, 1.5*inch])
+    ft.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.hexColor('#f3f4f6')),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+    ]))
+    elements.append(ft)
+    
+    # --- Input Data ---
+    elements.append(Paragraph("4. Submitted Profile Data", header_style))
+    inputs = []
+    for k, v in record.get('input_data', {}).items():
+        inputs.append([k.replace('_', ' ').upper(), str(v)])
+    
+    it = Table([['Parameter', 'Value']] + inputs, colWidths=[2.5*inch, 3*inch])
+    it.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.hexColor('#f3f4f6')),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+    ]))
+    elements.append(it)
+
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer

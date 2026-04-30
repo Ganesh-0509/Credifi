@@ -66,3 +66,30 @@ def analyze_ledger_anomaly(record: dict) -> dict:
                 "Review audit chain genesis to identify the exact point of divergence."
             ]
         }
+
+def generate_credit_narrative(record: dict) -> str:
+    """Uses Gemini AI to generate a human-friendly narrative explaining the credit decision."""
+    if not model:
+        return "AI analysis unavailable. Please review the numerical factors below."
+
+    prompt = f"""
+    You are a professional financial advisor at Credifi. 
+    Explain this credit decision to the applicant in a transparent, encouraging, and clear way.
+    
+    DECISION DATA:
+    {json.dumps(record, indent=2)}
+    
+    GUIDELINES:
+    1. Translate the SHAP values (feature contributions) into plain English (e.g. 'Your high income helped offset your debt ratio').
+    2. Be honest about why they were approved or rejected.
+    3. Provide exactly two sentences of encouragement or specific financial advice based on their data.
+    4. Keep the total response under 100 words.
+    5. Avoid technical jargon like 'SHAP' or 'Neural Node'. Use 'Forensic Scoring' instead.
+    """
+
+    try:
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except Exception as e:
+        print(f"Gemini Narrative Error: {e}")
+        return "Your profile was evaluated using our forensic scoring engine. Review your key factors for more details."

@@ -16,7 +16,15 @@ import {
   ChevronRight,
   CheckCircle2,
   Lock,
-  Download
+  Download,
+  AlertCircle,
+  Globe,
+  ArrowUpRight,
+  X as CloseIcon,
+  Search,
+  ListFilter,
+  FileText,
+  Sparkles
 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -148,6 +156,25 @@ export default function ApplicantDashboard() {
       console.error('Failed to fetch history detail:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadReport = async () => {
+    if (!result) return;
+    try {
+      const res = await fetch(`/api/decisions/report/${result.application_id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Credifi_Forensic_Report_${result.application_id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Download error:", err);
     }
   };
 
@@ -584,6 +611,21 @@ export default function ApplicantDashboard() {
                             ? " Risk parameters accepted." 
                             : " Threshold mismatch detected."}
                         </p>
+                        
+                        {result.ai_narrative && (
+                          <div className="mt-6 p-5 bg-amber-500/5 rounded-3xl border border-amber-500/10 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                              <BrainCircuit size={40} />
+                            </div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <Sparkles size={12} className="text-amber-500" />
+                              <span className="text-[9px] font-black text-amber-500 uppercase tracking-[0.2em]">Forensic AI Narrative</span>
+                            </div>
+                            <p className="text-[11px] font-bold text-slate-300 leading-relaxed italic relative z-10">
+                              "{result.ai_narrative}"
+                            </p>
+                          </div>
+                        )}
                       </div>
                       
                       {/* Risk Gauge */}
@@ -927,6 +969,15 @@ export default function ApplicantDashboard() {
                       >
                         <Download size={12} />
                         Audit Receipt
+                      </Button>
+                      <Button 
+                        size="sm"
+                        variant="secondary"
+                        onClick={handleDownloadReport}
+                        className="bg-amber-500 hover:bg-amber-400 text-black border-none text-[8px] font-black uppercase tracking-widest h-7 px-3 flex items-center gap-2"
+                      >
+                        <FileText size={12} />
+                        Full Forensic Report
                       </Button>
                     </div>
                     <span className="text-[6px] font-mono opacity-40 uppercase max-w-[200px] text-right">

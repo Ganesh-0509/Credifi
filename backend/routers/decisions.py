@@ -7,11 +7,13 @@ from models.db import User, get_db
 from routers.auth import require_role, get_current_user
 from core.model import predict_default
 from core.audit_chain import append_audit_log
+from services.forensic_ai import generate_credit_narrative
 from schemas.decisions import CreditApplication, DecisionResult
+from services.pdf_report import generate_individual_report_pdf
 
 router = APIRouter()
 
-def format_decision_result(prediction: dict, app_id: str, bank_name: str | None = None, input_data: dict | None = None) -> dict:
+def format_decision_result(prediction: dict, app_id: str, bank_name: str | None = None, input_data: dict | None = None, ai_narrative: str | None = None) -> dict:
     feature_meta = {
         "income": {"name": "annual income", "is_currency": True},
         "age": {"name": "age", "is_currency": False},
@@ -76,7 +78,8 @@ def format_decision_result(prediction: dict, app_id: str, bank_name: str | None 
         "suggestions": suggestions[:3],
         "bank_name": bank_name or "Global Trust Bank",
         "input_data": input_data,
-        "shap_values": shap_vals
+        "shap_values": shap_vals,
+        "ai_narrative": ai_narrative
     }
 
 @router.post("/apply", response_model=DecisionResult, dependencies=[Depends(require_role(["applicant"]))])
@@ -101,7 +104,9 @@ async def apply_for_credit(
         bank_name=application.bank_name
     )
 
-    return format_decision_result(prediction, app_id, application.bank_name, application.dict())
+    result = format_decision_result(prediction, app_id, application.bank_name, application.dict())
+    result["ai_narrative"] = generate_credit_narrative(result)
+    return result
 
 @router.get("/history", dependencies=[Depends(require_role(["applicant"]))])
 async def get_application_history(
@@ -143,7 +148,9 @@ async def get_history_detail(
         "explanations": record.shap_values
     }
     
-    return format_decision_result(prediction, record.application_id, record.bank_name, record.input_data)
+    result = format_decision_result(prediction, record.application_id, record.bank_name, record.input_data)
+    result["ai_narrative"] = generate_credit_narrative(result)
+    return result
 
 @router.get("/context/{application_id}", dependencies=[Depends(require_role(["applicant"]))])
 async def get_risk_context(
@@ -180,3 +187,41 @@ async def get_risk_context(
         "risk_score": round(current_record.probability * 100, 1),
         "status": "Elite" if percentile > 90 else ("Strong" if percentile > 70 else "Developing")
     }
+
+@router.get("/report/{application_id}", dependencies=[Depends(require_role(["applicant"]))])
+async def get_application_report(
+    application_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    from models.db import AuditLog
+    from fastapi.responses import StreamingResponse
+    
+    record = db.query(AuditLog).filter(
+        AuditLog.application_id == application_id,
+        AuditLog.user_id == current_user.id
+    ).first()
+    
+    if not record:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Application not found")
+        
+    # Reconstruct data for PDF
+    data = {
+        "application_id": record.application_id,
+        "decision": record.decision,
+        "probability": record.probability,
+        "bank_name": record.bank_name,
+        "input_data": record.input_data,
+        "shap_values": record.shap_values
+    }
+    
+    # Add AI narrative if available
+    data["ai_narrative"] = generate_credit_narrative(data)
+    
+    pdf_buffer = generate_individual_report_pdf(data)
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=Credifi_Audit_{application_id}.pdf"}
+    )

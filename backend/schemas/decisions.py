@@ -22,3 +22,4 @@ class DecisionResult(BaseModel):
     bank_name: str | None = None
     input_data: dict | None = None
     shap_values: dict | None = None
+    ai_narrative: str | None = None
