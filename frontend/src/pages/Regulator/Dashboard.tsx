@@ -165,6 +165,9 @@ export default function RegulatorDashboard() {
               <div>
                 <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{m.label}</p>
                 <p className="text-3xl font-black text-white tracking-tighter">{m.value}</p>
+                {m.label === "Model Integrity" && (
+                  <p className="text-[7px] font-bold text-slate-500 uppercase mt-1">Weighted Health Score (0-10)</p>
+                )}
               </div>
             </div>
           </Card>
@@ -215,11 +218,12 @@ export default function RegulatorDashboard() {
                   <XAxis 
                     dataKey="group" 
                     stroke="#475569" 
-                    fontSize={10} 
+                    fontSize={12} 
+                    height={60}
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fill: '#64748b', fontWeight: 800 }} 
-                    label={{ value: 'PROTECTED GROUPS', position: 'insideBottom', offset: -10, fontSize: 8, fill: '#475569', fontWeight: 900 }}
+                    tick={{ fill: '#94a3b8', fontWeight: 900 }} 
+                    label={{ value: 'PROTECTED ATTRIBUTE GROUPS', position: 'insideBottom', offset: 0, fontSize: 9, fill: '#475569', fontWeight: 900 }}
                   />
                   <YAxis 
                     stroke="#475569" 
@@ -228,7 +232,7 @@ export default function RegulatorDashboard() {
                     tickLine={false} 
                     domain={[0, 100]} 
                     tickFormatter={(v) => `${v}%`}
-                    label={{ value: 'APPROVAL RATE', angle: -90, position: 'insideLeft', offset: 0, fontSize: 8, fill: '#475569', fontWeight: 900 }}
+                    label={{ value: 'APPROVAL PROBABILITY', angle: -90, position: 'insideLeft', offset: 0, fontSize: 8, fill: '#475569', fontWeight: 900 }}
                   />
                   <Tooltip 
                     cursor={{ fill: 'rgba(255,255,255,0.02)' }}
@@ -318,11 +322,12 @@ export default function RegulatorDashboard() {
                     <XAxis 
                       dataKey="date" 
                       stroke="#475569" 
-                      fontSize={8} 
+                      fontSize={10} 
+                      height={50}
                       axisLine={false} 
                       tickLine={false} 
                       tickFormatter={(val) => val.split('-').slice(1).join('/')}
-                      label={{ value: 'AUDIT TIMELINE', position: 'insideBottom', offset: -5, fontSize: 7, fill: '#475569', fontWeight: 900 }}
+                      label={{ value: 'AUDIT TIMELINE (DD/MM)', position: 'insideBottom', offset: 5, fontSize: 8, fill: '#475569', fontWeight: 900 }}
                     />
                     <YAxis 
                       stroke="#475569" 
@@ -330,7 +335,7 @@ export default function RegulatorDashboard() {
                       axisLine={false} 
                       tickLine={false} 
                       tickFormatter={(val) => `${(val * 100).toFixed(0)}%`} 
-                      label={{ value: 'PARITY GAP', angle: -90, position: 'insideLeft', offset: 5, fontSize: 7, fill: '#475569', fontWeight: 900 }}
+                      label={{ value: 'EQUITY GAP (%)', angle: -90, position: 'insideLeft', offset: 10, fontSize: 8, fill: '#475569', fontWeight: 900 }}
                     />
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
@@ -490,62 +495,71 @@ export default function RegulatorDashboard() {
         </div>
       </Card>
 
-      {/* Forensic Glossary & Threshold Definitions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card title="Forensic Glossary" subtitle="Definitions and operational thresholds for regulatory metrics.">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Forensic Glossary & Institutional Color Scheme */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+        <Card title="Forensic Glossary" subtitle="Definitions for regulatory stakeholders." className="lg:col-span-9">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               { 
-                term: "Demographic Parity", 
-                desc: "Equal approval rates across groups.",
-                threshold: "< 10% Gap",
-                status: "STABLE"
+                term: "Model Integrity", 
+                desc: "A composite health score (0.0 - 10.0) based on forensic ledger validity and real-time drift detection.",
+                threshold: "6.5 = Monitoring"
               },
               { 
-                term: "Equal Opportunity", 
-                desc: "Equal Recall across groups.",
-                threshold: "< 5% Gap",
-                status: "STABLE"
+                term: "PSI (Stability Index)", 
+                desc: "A statistical measure of data shift. PSI < 0.1 is stable; PSI > 0.25 indicates significant data drift.",
+                threshold: "Critical Threshold: 0.25"
               },
               { 
-                term: "PSI (Stability)", 
-                desc: "Data distribution shift over time.",
-                threshold: "< 0.1 Stable",
-                status: "CRITICAL"
-              },
-              { 
-                term: "4/5ths Rule", 
-                desc: "Federal equity benchmark (80%).",
-                threshold: ">= 0.8 Ratio",
-                status: "MONITORING"
+                term: "4/5ths Rule Ratio", 
+                desc: "Selection rate of the lowest group divided by the highest. Must be >= 0.8 (80%) for federal compliance.",
+                threshold: "Target: 0.8+"
               }
             ].map((g, i) => (
-              <div key={i} className="p-4 bg-white/[0.01] border border-white/5 rounded-2xl space-y-2 hover:bg-white/[0.03] transition-all group">
-                 <div className="flex justify-between items-start">
-                   <h5 className="text-[8px] font-black text-amber-500 uppercase tracking-widest">{g.term}</h5>
-                   <Badge variant="info" className="text-[5px]">{g.threshold}</Badge>
-                 </div>
-                 <p className="text-[8px] text-slate-500 font-bold leading-tight">{g.desc}</p>
+              <div key={i} className="p-5 bg-white/[0.01] border border-white/5 rounded-3xl space-y-4">
+                 <h5 className="text-[10px] font-black text-amber-500 uppercase tracking-widest">{g.term}</h5>
+                 <p className="text-[10px] text-slate-400 font-bold leading-relaxed">{g.desc}</p>
+                 <Badge variant="info" className="text-[7px] py-1">{g.threshold}</Badge>
               </div>
             ))}
           </div>
         </Card>
 
-        <Card title="Institutional Remediation" subtitle="Automated suggestions to improve equity scores.">
+        <Card title="Color Identity" subtitle="Forensic Status Indicators" className="lg:col-span-3">
+           <div className="space-y-4">
+              {[
+                { color: "bg-emerald-500", label: "VERIFIED", desc: "Stable / Compliant" },
+                { color: "bg-amber-500", label: "MONITORING", desc: "Minor Drift Detected" },
+                { color: "bg-rose-500", label: "CRITICAL", desc: "Violation / Breach" },
+                { color: "bg-indigo-400", label: "SYSTEM", desc: "Internal Metric" }
+              ].map((c, i) => (
+                <div key={i} className="flex items-center gap-4">
+                   <div className={`w-3 h-3 rounded-full ${c.color} shadow-[0_0_10px_rgba(255,255,255,0.1)]`} />
+                   <div>
+                     <p className="text-[9px] font-black text-white tracking-widest">{c.label}</p>
+                     <p className="text-[8px] font-bold text-slate-600 uppercase tracking-tight">{c.desc}</p>
+                   </div>
+                </div>
+              ))}
+           </div>
+        </Card>
+      </div>
+
+      <Card title="Institutional Remediation" subtitle="Automated suggestions to improve equity scores." className="mb-12">
            <div className="space-y-4">
               {complianceSummary.filter(s => s.status === 'VIOLATION').length > 0 ? (
                 complianceSummary.filter(s => s.status === 'VIOLATION').map((v, i) => (
-                  <div key={i} className="p-4 bg-rose-500/5 border border-rose-500/20 rounded-2xl space-y-2">
+                  <div key={i} className="p-5 bg-rose-500/5 border border-rose-500/20 rounded-3xl space-y-3">
                     <div className="flex items-center gap-3">
-                      <AlertCircle size={14} className="text-rose-500" />
-                      <span className="text-[9px] font-black text-white uppercase tracking-tighter">Fix {v.attribute}: {v.lowest_group} Gap</span>
+                      <AlertCircle size={16} className="text-rose-500" />
+                      <span className="text-[10px] font-black text-white uppercase tracking-tighter">Fix {v.attribute}: {v.lowest_group} Gap</span>
                     </div>
-                    <p className="text-[8px] text-slate-400 font-bold uppercase tracking-tight">
-                      Adjust Neural Weights for {v.attribute} or apply ThresholdOptimizer.
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight leading-relaxed">
+                      Adjust Neural Weights for {v.attribute} or apply ThresholdOptimizer to resolve the {v.ratio * 100}% ratio discrepancy.
                     </p>
                     <Button 
                       variant="primary" 
-                      className="w-full h-8 text-[8px] mt-2 bg-rose-500 hover:bg-rose-600"
+                      className="w-full h-10 text-[10px] mt-2 bg-rose-500 hover:bg-rose-600 border-none text-black font-black uppercase tracking-widest"
                       onClick={() => handleLodgeRemediation(v.attribute, `Official remediation order for ${v.attribute} due to detected 4/5ths rule violation (${v.ratio * 100}% ratio).`)}
                     >
                       Lodge Forensic Order
@@ -553,17 +567,16 @@ export default function RegulatorDashboard() {
                   </div>
                 ))
               ) : (
-                <div className="h-full flex flex-col items-center justify-center p-8 text-center space-y-3 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl">
-                  <ShieldCheck size={32} className="text-emerald-500" />
+                <div className="h-full flex flex-col items-center justify-center p-12 text-center space-y-4 bg-emerald-500/5 border border-emerald-500/10 rounded-3xl">
+                  <ShieldCheck size={40} className="text-emerald-500" />
                   <div>
                     <h5 className="text-xs font-black text-white uppercase tracking-tight">Full Compliance</h5>
-                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">No active remediation required.</p>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">No active remediation required.</p>
                   </div>
                 </div>
               )}
            </div>
         </Card>
-      </div>
 
       {/* Forensic Logs Modal */}
       <AnimatePresence>
