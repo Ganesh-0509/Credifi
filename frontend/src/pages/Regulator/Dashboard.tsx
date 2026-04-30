@@ -12,7 +12,8 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer, 
-  Cell
+  Cell,
+  LabelList
 } from 'recharts';
 import { 
   Scale, 
@@ -222,6 +223,12 @@ export default function RegulatorDashboard() {
                     {fairness?.group_breakdown && Object.entries(fairness.group_breakdown).map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
+                    <LabelList 
+                      dataKey="rate" 
+                      position="top" 
+                      style={{ fill: '#94a3b8', fontSize: '10px', fontWeight: '900' }} 
+                      formatter={(v: any) => `${v}%`}
+                    />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -467,6 +474,74 @@ export default function RegulatorDashboard() {
           </table>
         </div>
       </Card>
+
+      {/* Forensic Glossary & Threshold Definitions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <Card title="Forensic Glossary" subtitle="Definitions and operational thresholds for regulatory metrics.">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              { 
+                term: "Demographic Parity", 
+                desc: "Equal approval rates across groups.",
+                threshold: "< 10% Gap",
+                status: "STABLE"
+              },
+              { 
+                term: "Equal Opportunity", 
+                desc: "Equal Recall across groups.",
+                threshold: "< 5% Gap",
+                status: "STABLE"
+              },
+              { 
+                term: "PSI (Stability)", 
+                desc: "Data distribution shift over time.",
+                threshold: "< 0.1 Stable",
+                status: "CRITICAL"
+              },
+              { 
+                term: "4/5ths Rule", 
+                desc: "Federal equity benchmark (80%).",
+                threshold: ">= 0.8 Ratio",
+                status: "MONITORING"
+              }
+            ].map((g, i) => (
+              <div key={i} className="p-4 bg-white/[0.01] border border-white/5 rounded-2xl space-y-2 hover:bg-white/[0.03] transition-all group">
+                 <div className="flex justify-between items-start">
+                   <h5 className="text-[8px] font-black text-amber-500 uppercase tracking-widest">{g.term}</h5>
+                   <Badge variant="info" className="text-[5px]">{g.threshold}</Badge>
+                 </div>
+                 <p className="text-[8px] text-slate-500 font-bold leading-tight">{g.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card title="Institutional Remediation" subtitle="Automated suggestions to improve equity scores.">
+           <div className="space-y-4">
+              {complianceSummary.filter(s => s.status === 'VIOLATION').length > 0 ? (
+                complianceSummary.filter(s => s.status === 'VIOLATION').map((v, i) => (
+                  <div key={i} className="p-4 bg-rose-500/5 border border-rose-500/20 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-3">
+                      <AlertCircle size={14} className="text-rose-500" />
+                      <span className="text-[9px] font-black text-white uppercase tracking-tighter">Fix {v.attribute}: {v.lowest_group} Gap</span>
+                    </div>
+                    <p className="text-[8px] text-slate-400 font-bold uppercase tracking-tight">
+                      Adjust Neural Weights for {v.attribute} or apply ThresholdOptimizer.
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center p-8 text-center space-y-3 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl">
+                  <ShieldCheck size={32} className="text-emerald-500" />
+                  <div>
+                    <h5 className="text-xs font-black text-white uppercase tracking-tight">Full Compliance</h5>
+                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">No active remediation required.</p>
+                  </div>
+                </div>
+              )}
+           </div>
+        </Card>
+      </div>
 
       {/* Forensic Logs Modal */}
       <AnimatePresence>
