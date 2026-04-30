@@ -136,9 +136,14 @@ export default function RegulatorDashboard() {
           },
           { label: "Drift Status", value: drift?.drift_detected ? "Critical" : "Stable", icon: Zap, color: drift?.drift_detected ? "text-rose-500" : "text-emerald-500", bg: drift?.drift_detected ? "bg-rose-500/10" : "bg-emerald-500/10" }
         ].map((m, i) => (
-          <Card key={i} className="bg-white/[0.02] border-none shadow-2xl shadow-black/40">
+          <Card key={i} className="bg-white/[0.02] border-none shadow-2xl shadow-black/40 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Badge variant={m.value === "Critical" || (m.label === "Max Equity Gap" && parseFloat(m.value) > 20) ? "error" : "success"} className="text-[6px]">
+                {m.value === "Critical" || (m.label === "Max Equity Gap" && parseFloat(m.value) > 20) ? "UNSTABLE" : "STABLE"}
+              </Badge>
+            </div>
             <div className="flex items-center gap-4">
-              <div className={`p-3 ${m.bg} ${m.color} rounded-2xl`}>
+              <div className={`p-3 ${m.bg} ${m.color} rounded-2xl group-hover:scale-110 transition-transform`}>
                 <m.icon size={24} />
               </div>
               <div>
@@ -191,8 +196,24 @@ export default function RegulatorDashboard() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={fairness?.group_breakdown ? Object.entries(fairness.group_breakdown).map(([k,v]: any) => ({ group: k.toString().toUpperCase(), rate: parseFloat(v) })) : []}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                  <XAxis dataKey="group" stroke="#475569" fontSize={10} axisLine={false} tickLine={false} tick={{ fill: '#475569', fontWeight: 700 }} />
-                  <YAxis stroke="#475569" fontSize={10} axisLine={false} tickLine={false} domain={[0, 100]} />
+                  <XAxis 
+                    dataKey="group" 
+                    stroke="#475569" 
+                    fontSize={10} 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: '#64748b', fontWeight: 800 }} 
+                    label={{ value: 'PROTECTED GROUPS', position: 'insideBottom', offset: -10, fontSize: 8, fill: '#475569', fontWeight: 900 }}
+                  />
+                  <YAxis 
+                    stroke="#475569" 
+                    fontSize={10} 
+                    axisLine={false} 
+                    tickLine={false} 
+                    domain={[0, 100]} 
+                    tickFormatter={(v) => `${v}%`}
+                    label={{ value: 'APPROVAL RATE', angle: -90, position: 'insideLeft', offset: 0, fontSize: 8, fill: '#475569', fontWeight: 900 }}
+                  />
                   <Tooltip 
                     cursor={{ fill: 'rgba(255,255,255,0.02)' }}
                     contentStyle={{ backgroundColor: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}
@@ -279,8 +300,16 @@ export default function RegulatorDashboard() {
                       axisLine={false} 
                       tickLine={false} 
                       tickFormatter={(val) => val.split('-').slice(1).join('/')}
+                      label={{ value: 'AUDIT TIMELINE', position: 'insideBottom', offset: -5, fontSize: 7, fill: '#475569', fontWeight: 900 }}
                     />
-                    <YAxis stroke="#475569" fontSize={8} axisLine={false} tickLine={false} tickFormatter={(val) => `${(val * 100).toFixed(0)}%`} />
+                    <YAxis 
+                      stroke="#475569" 
+                      fontSize={8} 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tickFormatter={(val) => `${(val * 100).toFixed(0)}%`} 
+                      label={{ value: 'PARITY GAP', angle: -90, position: 'insideLeft', offset: 5, fontSize: 7, fill: '#475569', fontWeight: 900 }}
+                    />
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
                       itemStyle={{ color: '#fbbf24', fontSize: '10px', fontWeight: 'bold' }}
