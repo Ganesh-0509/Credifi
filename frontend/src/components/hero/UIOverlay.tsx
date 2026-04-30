@@ -390,7 +390,6 @@ export default function UIOverlay({ navigate }: UIOverlayProps) {
         </footer>
       </PlatformSection>
     </div>
-    </div>
   );
 }
 
