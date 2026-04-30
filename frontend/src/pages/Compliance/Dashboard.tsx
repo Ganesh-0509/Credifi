@@ -134,7 +134,7 @@ export default function ComplianceDashboard() {
         alert(data.message);
         fetchRecent();
         fetchStats();
-        setVerifyStatus(prev => prev ? { ...prev, valid: true, compromised_records: [] } : null);
+        setVerifyStatus((prev: any) => prev ? { ...prev, valid: true, compromised_records: [] } : null);
       }
     } catch (err) {
       console.error(err);
