@@ -520,56 +520,6 @@ export default function RegulatorDashboard() {
         </div>
       </Card>
 
-      {/* Forensic Glossary & Institutional Color Scheme */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-        <Card title="Forensic Glossary" subtitle="Definitions for regulatory stakeholders." className="lg:col-span-9">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { 
-                term: "Model Integrity", 
-                desc: "A composite health score (0.0 - 10.0) based on forensic ledger validity and real-time drift detection.",
-                threshold: "6.5 = Monitoring"
-              },
-              { 
-                term: "PSI (Stability Index)", 
-                desc: "A statistical measure of data shift. PSI < 0.1 is stable; PSI > 0.25 indicates significant data drift.",
-                threshold: "Critical Threshold: 0.25"
-              },
-              { 
-                term: "4/5ths Rule Ratio", 
-                desc: "Selection rate of the lowest group divided by the highest. Must be >= 0.8 (80%) for federal compliance.",
-                threshold: "Target: 0.8+"
-              }
-            ].map((g, i) => (
-              <div key={i} className="p-5 bg-white/[0.01] border border-white/5 rounded-3xl space-y-4">
-                 <h5 className="text-[10px] font-black text-amber-500 uppercase tracking-widest">{g.term}</h5>
-                 <p className="text-[10px] text-slate-400 font-bold leading-relaxed">{g.desc}</p>
-                 <Badge variant="info" className="text-[7px] py-1">{g.threshold}</Badge>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card title="Color Identity" subtitle="Forensic Status Indicators" className="lg:col-span-3">
-           <div className="space-y-4">
-              {[
-                { color: "bg-emerald-500", label: "VERIFIED", desc: "Stable / Compliant" },
-                { color: "bg-amber-500", label: "MONITORING", desc: "Minor Drift Detected" },
-                { color: "bg-rose-500", label: "CRITICAL", desc: "Violation / Breach" },
-                { color: "bg-indigo-400", label: "SYSTEM", desc: "Internal Metric" }
-              ].map((c, i) => (
-                <div key={i} className="flex items-center gap-4">
-                   <div className={`w-3 h-3 rounded-full ${c.color} shadow-[0_0_10px_rgba(255,255,255,0.1)]`} />
-                   <div>
-                     <p className="text-[9px] font-black text-white tracking-widest">{c.label}</p>
-                     <p className="text-[8px] font-bold text-slate-600 uppercase tracking-tight">{c.desc}</p>
-                   </div>
-                </div>
-              ))}
-           </div>
-        </Card>
-      </div>
-
       <Card title="Institutional Remediation" subtitle="Automated suggestions to improve equity scores." className="mb-12">
            <div className="space-y-4">
               {complianceSummary.filter(s => s.status === 'VIOLATION').length > 0 ? (
