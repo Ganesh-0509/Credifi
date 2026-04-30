@@ -67,11 +67,10 @@ export default function UIOverlay({ navigate }: UIOverlayProps) {
       
       {/* ── Fixed Navigation (Premium Style) ── */}
       <nav className="fixed top-0 left-0 w-full px-10 py-10 flex justify-between items-center z-[100] pointer-events-auto bg-gradient-to-b from-[#020617] via-[#020617]/80 to-transparent">
-        <div className="flex items-center gap-4 group cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <div className="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-amber-500/30 group-hover:rotate-12 transition-all">
-            <Shield className="text-black w-6 h-6" />
+        <div className="flex items-center group cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <div className="w-12 h-12 rounded-full border-2 border-amber-500/20 p-0.5 shadow-xl shadow-amber-500/10 bg-white/5 overflow-hidden">
+            <img src="/brand-logo.jpeg" alt="Credifi Logo" className="w-full h-full object-cover rounded-full" />
           </div>
-          <span className="text-white font-black uppercase tracking-tighter text-2xl italic font-display">Credifi</span>
         </div>
         
         <div className="flex items-center gap-10">
@@ -96,7 +95,9 @@ export default function UIOverlay({ navigate }: UIOverlayProps) {
         >
           <div className="flex justify-center mb-12">
             <span className="badge-premium">
-              <Shield size={12} className="mr-2" />
+              <div className="w-5 h-5 rounded-full border border-amber-500/30 overflow-hidden mr-2">
+                <img src="/brand-logo.jpeg" alt="" className="w-full h-full object-cover" />
+              </div>
               Autonomous Credit Integrity
             </span>
           </div>

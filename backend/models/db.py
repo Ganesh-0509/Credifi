@@ -1,15 +1,28 @@
 from __future__ import annotations
 from datetime import datetime
-from sqlalchemy import JSON, Float, ForeignKey, Integer, String, DateTime, create_engine
+from sqlalchemy import JSON, Float, ForeignKey, Integer, String, DateTime, create_engine, Index, event
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
+import os
 
-DATABASE_URL = "sqlite:///./credifi.db"
+# Support PostgreSQL migration via environment variables
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./credifi.db")
 
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False},
+    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {},
     future=True,
+    pool_pre_ping=True # Robustness for long-running connections
 )
+
+# Optimization: Enable WAL mode for SQLite to improve concurrency
+if "sqlite" in DATABASE_URL:
+    @event.listens_for(engine, "connect")
+    def set_sqlite_pragma(dbapi_connection, connection_record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA synchronous=NORMAL")
+        cursor.close()
+
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)
 
 class Base(DeclarativeBase):
@@ -39,6 +52,11 @@ class AuditLog(Base):
     previous_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     current_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     bank_name: Mapped[str] = mapped_column(String(100), nullable=True)
+
+# High-performance composite indexes for forensic retrieval
+Index('idx_user_audit_time', AuditLog.user_id, AuditLog.timestamp)
+Index('idx_app_id_lookup', AuditLog.application_id)
+Index('idx_timestamp_desc', AuditLog.timestamp.desc())
 
 def get_db():
     db = SessionLocal()

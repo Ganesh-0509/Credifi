@@ -60,9 +60,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-black border-r border-white/5 transition-transform duration-500 ease-[0.16, 1, 0.3, 1] transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="h-full flex flex-col p-8">
           {/* Brand */}
-          <div className="flex items-center gap-4 mb-12 px-2">
-            <div className="w-10 h-10 bg-amber-500 rounded-2xl flex items-center justify-center text-black font-black text-2xl shadow-2xl shadow-amber-500/20">C</div>
-            <span className="text-white font-black tracking-tighter text-2xl uppercase">Credifi</span>
+          <div className="flex items-center mb-12 px-2">
+            <div className="w-12 h-12 rounded-full border border-amber-500/30 p-0.5 shadow-lg shadow-amber-500/10 bg-white/5 overflow-hidden">
+              <img src="/brand-logo.jpeg" alt="Credifi Logo" className="w-full h-full object-cover rounded-full" />
+            </div>
           </div>
 
           {/* Navigation */}
@@ -123,9 +124,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
             
-            <div className="flex items-center gap-4 group cursor-pointer">
-              <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center text-black font-bold text-xl shadow-lg shadow-amber-500/20 transition-transform">C</div>
-              <span className="hidden sm:block text-white font-bold tracking-tighter text-2xl uppercase">Credifi</span>
+            <div className="flex items-center group cursor-pointer">
+              <div className="w-10 h-10 rounded-full border border-amber-500/30 p-0.5 shadow-lg shadow-amber-500/10 bg-white/5 overflow-hidden">
+                <img src="/brand-logo.jpeg" alt="Credifi Logo" className="w-full h-full object-cover rounded-full" />
+              </div>
             </div>
           </div>
 

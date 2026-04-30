@@ -57,7 +57,12 @@ Thumbs.db
 skills/
 # Local databases
 *.db
+*.db-shm
+*.db-wal
 backend/unbiased_ai.db
 
 # Generated data
 data/
+
+# IDE/Build
+frontend/src/vite-env.d.ts

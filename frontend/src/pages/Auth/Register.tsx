@@ -60,10 +60,9 @@ export default function RegisterPage() {
           <Link to="/" className="mb-8 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors group">
             <ChevronLeft size={20} className="text-slate-500 group-hover:text-white transition-colors" />
           </Link>
-          <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center mb-6 shadow-2xl shadow-amber-500/20">
-            <Shield className="text-black w-6 h-6" />
+          <div className="w-20 h-20 rounded-full border-2 border-amber-500/20 p-1 mb-4 shadow-2xl shadow-amber-500/10 bg-white/5 overflow-hidden">
+            <img src="/brand-logo.jpeg" alt="Credifi Logo" className="w-full h-full object-cover rounded-full" />
           </div>
-          <h1 className="text-3xl font-black text-white tracking-tighter uppercase font-display italic">Register <span className="text-amber-500">Node</span></h1>
           <p className="text-slate-600 mt-2 text-[9px] font-black uppercase tracking-[0.3em] mono">Initialize Identity Instance</p>
         </div>
 

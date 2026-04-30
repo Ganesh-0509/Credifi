@@ -5,7 +5,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from models.db import Base, engine
 from routers import auth, decisions, audit, regulator
 
-app = FastAPI(title="Credifi AI Credit Platform")
+from contextlib import asynccontextmanager
+from core.tasks import start_background_tasks
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Start background tasks
+    start_background_tasks()
+    yield
+
+app = FastAPI(
+    title="Credifi AI Engine",
+    version="2.0.0",
+    lifespan=lifespan
+)
 
 _CORS_ORIGINS = [
     "http://localhost:3000",
@@ -34,6 +47,11 @@ app.include_router(regulator.router, prefix="/regulator", tags=["Regulatory"])
 def startup_db() -> None:
     Base.metadata.create_all(bind=engine)
 
+@app.get("/health/integrity")
+async def get_integrity_status():
+    from core.tasks import SYSTEM_INTEGRITY_STATUS
+    return SYSTEM_INTEGRITY_STATUS
+
 @app.get("/health")
-def health() -> dict[str, str]:
+async def health_check():
     return {"status": "ok", "system": "Credifi AI"}
