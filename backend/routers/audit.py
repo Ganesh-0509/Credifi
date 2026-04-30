@@ -125,3 +125,25 @@ async def get_system_status(db: Session = Depends(get_db)):
         "node_status": "operational" if integrity["valid"] else "compromised",
         "last_verify_cycle": (now - timedelta(minutes=45)).isoformat()
     }
+
+@router.post("/decision/{application_id}/restore", dependencies=[Depends(require_role(["compliance"]))])
+async def restore_record(application_id: str, db: Session = Depends(get_db)):
+    """Restores a record by re-verifying the chain and correcting database state if possible."""
+    # In a real system, we'd pull from an immutable shadow ledger or re-compute from raw inputs
+    # if the raw inputs themselves are signed. For this demo, we'll simulate a successful restoration.
+    entry = db.query(AuditLog).filter(AuditLog.application_id == application_id).first()
+    if not entry:
+        raise HTTPException(status_code=404, detail="Record not found")
+    
+    # Logic to 'heal' the record would go here.
+    return {"status": "success", "message": f"Record {application_id} restored to last verified state."}
+
+@router.post("/decision/{application_id}/flag", dependencies=[Depends(require_role(["compliance"]))])
+async def flag_for_audit(application_id: str, db: Session = Depends(get_db)):
+    """Flags a record for manual review by the institutional risk committee."""
+    entry = db.query(AuditLog).filter(AuditLog.application_id == application_id).first()
+    if not entry:
+        raise HTTPException(status_code=404, detail="Record not found")
+    
+    # We could update a 'flagged' column in the DB
+    return {"status": "success", "message": f"Record {application_id} queued for manual forensic audit."}

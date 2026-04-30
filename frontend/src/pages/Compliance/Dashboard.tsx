@@ -123,6 +123,37 @@ export default function ComplianceDashboard() {
     }
   };
 
+  const handleRestore = async (appId: string) => {
+    try {
+      const res = await fetch(`/api/audit/decision/${appId}/restore`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        alert(data.message);
+        fetchRecent();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleFlagAudit = async (appId: string) => {
+    try {
+      const res = await fetch(`/api/audit/decision/${appId}/flag`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const toggleSelection = (id: string) => {
     const newSelected = new Set(selectedIds);
     if (newSelected.has(id)) newSelected.delete(id);
@@ -463,9 +494,9 @@ export default function ComplianceDashboard() {
           )}
         </AnimatePresence>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="flex flex-col gap-12 items-start">
           {/* Ledger List */}
-          <div className="lg:col-span-8 space-y-8">
+          <div className="w-full space-y-8">
             <Card className="p-0 border-none bg-white/[0.02] overflow-hidden rounded-[2.5rem] border border-white/5">
               <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
                 <div className="flex items-center gap-4">
@@ -553,7 +584,7 @@ export default function ComplianceDashboard() {
           </div>
 
           {/* Detailed Inspector */}
-          <div className="lg:col-span-4">
+          <div className="w-full">
             <AnimatePresence mode="wait">
               {!selectedApp ? (
                 <motion.div 
@@ -610,7 +641,7 @@ export default function ComplianceDashboard() {
                               <h5 className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-6 flex items-center gap-2">
                                  <Activity size={12} className="text-amber-500" /> System Inputs
                               </h5>
-                              <div className="grid grid-cols-2 gap-4">
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {Object.entries(selectedApp.input_data).map(([k, v]: any) => {
                                   let displayValue = v;
                                   if (k === 'income' || k === 'loan_amount') displayValue = formatCurrency(v);
@@ -635,7 +666,7 @@ export default function ComplianceDashboard() {
                                 </h5>
                                 <Badge variant="info">Forensic Contextualization</Badge>
                               </div>
-                              <div className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {(() => {
                                   const FEATURE_NAMES: Record<string, string> = {
                                     income: "Annual Income",
@@ -958,13 +989,16 @@ export default function ComplianceDashboard() {
                           </motion.div>
                         ))}
 
-                        <div className="mt-8 p-6 bg-white/[0.03] rounded-3xl border border-white/10 relative overflow-hidden group cursor-pointer hover:bg-white/[0.05] transition-all">
-                           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity">
-                             <RefreshCw size={60} />
-                           </div>
-                           <h6 className="text-[10px] font-black text-white uppercase tracking-widest mb-1">Restore from Chain</h6>
-                           <p className="text-[9px] font-bold text-slate-600 uppercase leading-relaxed max-w-[200px]">Roll back database record to the last known cryptographically signed state.</p>
-                        </div>
+                            <div 
+                              onClick={() => handleRestore(verifyStatus.application_id)}
+                              className="mt-8 p-6 bg-white/[0.03] rounded-3xl border border-white/10 relative overflow-hidden group cursor-pointer hover:bg-white/[0.05] transition-all"
+                            >
+                               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity">
+                                 <RefreshCw size={60} />
+                               </div>
+                               <h6 className="text-[10px] font-black text-white uppercase tracking-widest mb-1">Restore from Chain</h6>
+                               <p className="text-[9px] font-bold text-slate-600 uppercase leading-relaxed max-w-[200px]">Roll back database record to the last known cryptographically signed state.</p>
+                            </div>
                       </div>
                     )}
                   </div>
@@ -982,7 +1016,13 @@ export default function ComplianceDashboard() {
                  </div>
                  <div className="flex gap-4">
                    <Button variant="outline" onClick={() => setShowAnomalyModal(false)}>Close Inspector</Button>
-                   <Button variant="primary" className="bg-rose-500 hover:bg-rose-400 text-black border-none">Flag for Manual Audit</Button>
+                   <Button 
+                    variant="primary" 
+                    className="bg-rose-500 hover:bg-rose-400 text-black border-none"
+                    onClick={() => handleFlagAudit(verifyStatus.application_id)}
+                   >
+                     Flag for Manual Audit
+                   </Button>
                  </div>
               </div>
             </motion.div>
