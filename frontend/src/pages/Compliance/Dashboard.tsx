@@ -281,7 +281,7 @@ export default function ComplianceDashboard() {
   }, [token]);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700 min-h-screen bg-black pt-32 pb-20 px-6 font-sans text-white overflow-x-hidden selection:bg-amber-500 selection:text-black">
+    <div className="space-y-12 animate-in fade-in duration-700">
       <div className="max-w-[1440px] mx-auto space-y-12">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
